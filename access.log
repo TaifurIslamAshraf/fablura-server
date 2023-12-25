@@ -22,3 +22,5 @@
 ::1 - - [25/Dec/2023:17:22:04 +0000] "POST /api/v1/user/register HTTP/1.1" 400 173 "-" "PostmanRuntime/7.36.0"
 ::1 - - [25/Dec/2023:17:22:39 +0000] "POST /api/v1/user/register HTTP/1.1" 400 200 "-" "PostmanRuntime/7.36.0"
 ::1 - - [25/Dec/2023:17:27:05 +0000] "POST /api/v1/user/register HTTP/1.1" 400 200 "-" "PostmanRuntime/7.36.0"
+::1 - - [25/Dec/2023:17:28:15 +0000] "POST /api/v1/user/register HTTP/1.1" 201 407 "-" "PostmanRuntime/7.36.0"
+::1 - - [25/Dec/2023:17:28:18 +0000] "POST /api/v1/user/register HTTP/1.1" 400 392 "-" "PostmanRuntime/7.36.0"
