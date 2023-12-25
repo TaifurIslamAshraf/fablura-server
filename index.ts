@@ -1,4 +1,5 @@
 import { app } from "./app";
+import { dbConnection } from "./src/config/db";
 import secret from "./src/config/secret";
 
 const startServer = () => {
@@ -11,5 +12,8 @@ const startServer = () => {
     process.exit(1);
   }
 };
+
+//database connection
+dbConnection();
 
 startServer();

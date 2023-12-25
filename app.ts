@@ -8,6 +8,7 @@ import asyncHandler from "express-async-handler";
 import morgan from "morgan";
 
 import { errorHandler, notFound } from "./src/lib/errorHandler";
+import userRoute from "./src/routes/user.route";
 
 export const app = express();
 
@@ -31,6 +32,11 @@ app.use(cookieParser());
 //cors setup
 app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
 
+// console.log(require("crypto").randomBytes(32).toString("hex"));
+
+//all routes here
+app.use("/api/v1/user", userRoute);
+
 //test route
 app.get(
   "/",
@@ -38,7 +44,7 @@ app.get(
     res.status(200).json({
       success: true,
       message: "Test successfully",
-      data: "This is Data",
+      data: "This is Test Data",
     });
   })
 );
