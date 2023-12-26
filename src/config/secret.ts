@@ -4,10 +4,20 @@ dotenv.config();
 
 const secret = {
   PORT: process.env.PORT,
-  dbUri: process.env.DB_URI,
+  dbUri: process.env.DB_URI as string,
 
-  accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
-  refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
+  accessTokenSecret: process.env.ACCESS_TOKEN_SECRET as string,
+  refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET as string,
+  mailVarificationTokenSecret: process.env
+    .MAIL_VARIFICATION_TOKEN_SECRET as string,
+  accessTokenExpire: process.env.ACCESS_TOKEN_EXPIRE,
+  refreshTokenExpire: process.env.REFRESH_TOKEN_EXPIRE,
+
+  smtpMail: process.env.SMTP_MAIL,
+  smtpHost: process.env.SMTP_HOST,
+  smtpPort: process.env.SMTP_PORT,
+  smtpService: process.env.SMTP_SERVICE,
+  smtpPass: process.env.SMTP_PASS,
 };
 
 export default secret;

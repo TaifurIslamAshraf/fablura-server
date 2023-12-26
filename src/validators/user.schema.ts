@@ -27,3 +27,28 @@ export const userSchemaValidator = z.object({
     role: z.enum(["admin", "user"]).optional(),
   }),
 });
+
+export const activateUserSchema = z.object({
+  body: z.object({
+    token: z.string({
+      required_error: "Activation token is required",
+    }),
+    activation_code: z.string({
+      required_error: "Activation code is required",
+    }),
+  }),
+});
+
+export const loginUserSchema = z.object({
+  body: z.object({
+    email: z
+      .string({
+        required_error: "Email is Required",
+      })
+      .email("Enter a valid email"),
+
+    password: z
+      .string({ required_error: "Password is Required" })
+      .min(6, "Password should be at least 6 characters"),
+  }),
+});

@@ -1,0 +1,35 @@
+import { NextFunction, Request, Response } from "express";
+import asyncHandler from "express-async-handler";
+import { JwtPayload } from "jsonwebtoken";
+import secret from "../config/secret";
+import { errorMessage } from "../lib/errorHandler";
+import { verifyJwtToken } from "../lib/verifyToken";
+import UserModel from "../models/user.model";
+
+export const isAuthenticated = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const refresh_token = req.cookies.refresh_token as string;
+
+    if (!refresh_token) {
+      errorMessage(res, 400, "Please login to access this recourse");
+    }
+    const decoded = verifyJwtToken(
+      refresh_token,
+      secret.refreshTokenSecret
+    ) as JwtPayload;
+
+    if (!decoded) {
+      errorMessage(res, 400, "Invalid access token. please login");
+    }
+
+    const user = await UserModel.findById(decoded._id);
+
+    if (!user) {
+      errorMessage(res, 400, "Please login to access this recourse");
+    }
+
+    res.locals.user = user;
+
+    next();
+  }
+);

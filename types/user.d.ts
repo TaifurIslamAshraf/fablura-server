@@ -13,3 +13,13 @@ export interface IUser extends Document {
   accessToken: () => string;
   refreshToken: () => string;
 }
+
+export interface IActivationInfo {
+  fullName: string;
+  email: string;
+  password: string;
+  isSocialAuth: boolean;
+  avatar?: string;
+  address: string;
+  phone: string;
+}

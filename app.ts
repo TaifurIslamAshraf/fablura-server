@@ -3,6 +3,7 @@ import path from "path";
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import ejs from "ejs";
 import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import morgan from "morgan";
@@ -21,6 +22,9 @@ app.use(morgan("dev"));
 
 //static folder location
 app.use(express.static("public/uploads"));
+
+//set view engine to ejs
+app.set("view engine", ejs);
 
 //body parser
 app.use(express.json({ limit: "50mb" }));
