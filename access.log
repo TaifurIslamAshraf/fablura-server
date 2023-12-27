@@ -117,3 +117,8 @@
 ::1 - - [27/Dec/2023:21:58:18 +0000] "POST /api/v1/user/login HTTP/1.1" 200 504 "-" "PostmanRuntime/7.36.0"
 ::1 - - [27/Dec/2023:21:58:21 +0000] "PUT /api/v1/user/update-info HTTP/1.1" 200 383 "-" "PostmanRuntime/7.36.0"
 ::1 - - [27/Dec/2023:21:59:05 +0000] "GET /api/v1/user/me HTTP/1.1" 200 335 "-" "PostmanRuntime/7.36.0"
+::1 - - [27/Dec/2023:21:59:45 +0000] "GET /api/v1/user/me HTTP/1.1" 200 335 "-" "PostmanRuntime/7.36.0"
+::1 - - [27/Dec/2023:22:00:15 +0000] "GET /public/uploads/users/1703714301382-skill.jpg HTTP/1.1" 200 1796762 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+::1 - - [27/Dec/2023:22:00:49 +0000] "PUT /api/v1/user/update-info HTTP/1.1" 200 387 "-" "PostmanRuntime/7.36.0"
+::1 - - [27/Dec/2023:22:01:32 +0000] "PUT /api/v1/user/update-info HTTP/1.1" 200 387 "-" "PostmanRuntime/7.36.0"
+::1 - - [27/Dec/2023:22:01:46 +0000] "PUT /api/v1/user/update-info HTTP/1.1" 200 387 "-" "PostmanRuntime/7.36.0"
