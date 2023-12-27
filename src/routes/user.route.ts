@@ -2,11 +2,16 @@ import express from "express";
 
 import {
   activateUser,
+  getUserInfo,
   loginUser,
   logout,
   registerUser,
+  socialAuth,
+  updateAccessToken,
+  updateUserInfo,
 } from "../controllers/user.controller";
 import { isAuthenticated } from "../middlewares/authGard";
+import { fileUploder } from "../middlewares/uploadFile";
 import { validator } from "../middlewares/validator";
 import {
   activateUserSchema,
@@ -16,9 +21,20 @@ import {
 
 const userRoute = express.Router();
 
+const upload = fileUploder("public/uploads/users");
+
 userRoute.post("/register", validator(userSchemaValidator), registerUser);
 userRoute.post("/activate", validator(activateUserSchema), activateUser);
 userRoute.post("/login", validator(loginUserSchema), loginUser);
 userRoute.get("/logout", isAuthenticated, logout);
+userRoute.get("/refresh", updateAccessToken);
+userRoute.get("/me", isAuthenticated, getUserInfo);
+userRoute.get("/social-auth", socialAuth);
+userRoute.put(
+  "/update-info",
+  isAuthenticated,
+  upload.single("avatar"),
+  updateUserInfo
+);
 
 export default userRoute;

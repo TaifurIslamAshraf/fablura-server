@@ -1,9 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
+import { JwtPayload } from "jsonwebtoken";
 import { IActivationInfo, IUser } from "../../types/user";
 import secret from "../config/secret";
 import { errorMessage } from "../lib/errorHandler";
-import { sendToken } from "../lib/jwt";
+import { genarateJwtToken } from "../lib/genarateJwtToken";
+import {
+  accessTokenCookieOptions,
+  refreshTokenCookieOptions,
+  sendToken,
+} from "../lib/jwt";
 import { verifyJwtToken } from "../lib/verifyToken";
 import UserModel from "../models/user.model";
 import {
@@ -103,5 +109,97 @@ export const logout = asyncHandler(
       success: true,
       message: "Logout successfull",
     });
+  }
+);
+
+//update access token
+export const updateAccessToken = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const refresh_token = req.cookies.refresh_token as string;
+
+    const decoded = verifyJwtToken(
+      refresh_token,
+      secret.refreshTokenSecret
+    ) as JwtPayload;
+    if (!decoded) {
+      errorMessage(res, 400, "Please login to access this recourse");
+    }
+
+    const userId = decoded._id;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      errorMessage(res, 400, "Please login to access this recourse");
+    }
+
+    const accessToken = genarateJwtToken({
+      payload: { _id: userId },
+      jwtSecret: secret.accessTokenSecret,
+      expireIn: "5m",
+    });
+    const refreshToken = genarateJwtToken({
+      payload: { _id: userId },
+      jwtSecret: secret.refreshTokenSecret,
+      expireIn: "30d",
+    });
+
+    res.locals.user = user;
+    res.cookie("access_token", accessToken, accessTokenCookieOptions);
+    res.cookie("refresh_token", refreshToken, refreshTokenCookieOptions);
+
+    res.status(200).json({
+      success: true,
+      accessToken,
+    });
+  }
+);
+
+export const getUserInfo = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = res.locals.user._id;
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      errorMessage(res, 404, "User not found");
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  }
+);
+
+export const socialAuth = asyncHandler(async (req: Request, res: Response) => {
+  const { fullName, email, avatar } = req.body;
+
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    const newUser = await UserModel.create({
+      fullName,
+      email,
+      avatar,
+      isSocialAuth: true,
+    });
+
+    sendToken(newUser, 201, res);
+  } else {
+    sendToken(user, 200, res);
+  }
+});
+
+export const updateUserInfo = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { fullName, phone, address } = req.body;
+    if (req.body.email) {
+      errorMessage(res, 400, "You can not update you email");
+    }
+    console.log(req.file?.filename);
+    const userId = res.locals.user._id;
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      errorMessage(res, 404, "User not found");
+    }
   }
 );

@@ -41,12 +41,12 @@ const userSchema: Schema<IUser> = new Schema(
     },
     address: {
       type: String,
-      required: [true, "Address is Required"],
+      // required: [true, "Address is Required"],
     },
 
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
+      // required: [true, "Phone number is required"],
     },
     role: {
       type: String,
