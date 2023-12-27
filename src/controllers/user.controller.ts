@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { JwtPayload } from "jsonwebtoken";
 import { IActivationInfo, IUser } from "../../types/user";
 import secret from "../config/secret";
+import { deleteImage } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
 import { genarateJwtToken } from "../lib/genarateJwtToken";
 import {
@@ -162,6 +163,7 @@ export const getUserInfo = asyncHandler(
     if (!user) {
       errorMessage(res, 404, "User not found");
     }
+    console.log(user?.avatar);
 
     res.status(200).json({
       success: true,
@@ -194,12 +196,46 @@ export const updateUserInfo = asyncHandler(
     if (req.body.email) {
       errorMessage(res, 400, "You can not update you email");
     }
-    console.log(req.file?.filename);
-    const userId = res.locals.user._id;
 
+    const userId = res.locals.user._id;
     const user = await UserModel.findById(userId);
     if (!user) {
       errorMessage(res, 404, "User not found");
     }
+
+    if (req.file) {
+      await deleteImage(user?.avatar as string);
+    }
+    let updateFields: Record<string, any> = {};
+
+    if (fullName) {
+      updateFields.fullName = fullName;
+    }
+    if (phone) {
+      updateFields.phone = phone;
+    }
+    if (address) {
+      updateFields.address = address;
+    }
+    if (req.file?.path) {
+      updateFields.avatar = req.file.path;
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      errorMessage(res, 404, "User not found");
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User info update successfull",
+      updatedUser,
+    });
   }
 );

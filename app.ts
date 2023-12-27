@@ -21,7 +21,7 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use(morgan("dev"));
 
 //static folder location
-app.use(express.static("public/uploads"));
+app.use("/public", express.static("public"));
 
 //set view engine to ejs
 app.set("view engine", ejs);
