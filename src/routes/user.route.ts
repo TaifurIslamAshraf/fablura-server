@@ -21,8 +21,6 @@ import {
 
 const userRoute = express.Router();
 
-const upload = fileUploder("public/uploads/users");
-
 userRoute.post("/register", validator(userSchemaValidator), registerUser);
 userRoute.post("/activate", validator(activateUserSchema), activateUser);
 userRoute.post("/login", validator(loginUserSchema), loginUser);
@@ -33,7 +31,7 @@ userRoute.get("/social-auth", socialAuth);
 userRoute.put(
   "/update-info",
   isAuthenticated,
-  upload.single("avatar"),
+  fileUploder("public/uploads/users", true, "avatar"),
   updateUserInfo
 );
 

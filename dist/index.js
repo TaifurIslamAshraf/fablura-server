@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = require("./app");
+const db_1 = require("./src/config/db");
 const secret_1 = __importDefault(require("./src/config/secret"));
 const startServer = () => {
     try {
@@ -16,5 +17,7 @@ const startServer = () => {
         process.exit(1);
     }
 };
+//database connection
+(0, db_1.dbConnection)();
 startServer();
 //# sourceMappingURL=index.js.map

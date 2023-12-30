@@ -4,10 +4,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
+const fs_1 = require("fs");
+const path_1 = __importDefault(require("path"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
+const ejs_1 = __importDefault(require("ejs"));
 const express_1 = __importDefault(require("express"));
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const morgan_1 = __importDefault(require("morgan"));
+const errorHandler_1 = require("./src/lib/errorHandler");
+const user_route_1 = __importDefault(require("./src/routes/user.route"));
 exports.app = (0, express_1.default)();
+//logger
+const accessLogStream = (0, fs_1.createWriteStream)(path_1.default.join(__dirname, "access.log"), {
+    flags: "a",
+});
+exports.app.use((0, morgan_1.default)("combined", { stream: accessLogStream }));
+exports.app.use((0, morgan_1.default)("dev"));
+//static folder location
+exports.app.use("/public", express_1.default.static("public"));
+//set view engine to ejs
+exports.app.set("view engine", ejs_1.default);
 //body parser
 exports.app.use(express_1.default.json({ limit: "50mb" }));
 exports.app.use(express_1.default.urlencoded({ extended: true, limit: "50mb" }));
@@ -15,15 +32,18 @@ exports.app.use(express_1.default.urlencoded({ extended: true, limit: "50mb" }))
 exports.app.use((0, cookie_parser_1.default)());
 //cors setup
 exports.app.use((0, cors_1.default)({ origin: ["http://localhost:3000"], credentials: true }));
+// console.log(require("crypto").randomBytes(32).toString("hex"));
+//all routes here
+exports.app.use("/api/v1/user", user_route_1.default);
 //test route
-exports.app.get("/", (req, res) => {
-    try {
-        res.status(200).json({
-            success: true,
-            message: "Test successfully",
-            data: "This is Data",
-        });
-    }
-    catch (error) { }
-});
+exports.app.get("/", (0, express_async_handler_1.default)(async (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Test successfully",
+        data: "This is Test Data",
+    });
+}));
+//error handling
+exports.app.use(errorHandler_1.notFound);
+exports.app.use(errorHandler_1.errorHandler);
 //# sourceMappingURL=app.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"deleteImage.js","sourceRoot":"","sources":["../../../src/lib/deleteImage.ts"],"names":[],"mappings":";;;;;;AAAA,2DAA6B;AAEtB,MAAM,WAAW,GAAG,KAAK,EAAE,QAAgB,EAAE,EAAE;IACpD,IAAI,QAAQ,EAAE,CAAC;QACb,MAAM,kBAAE,CAAC,MAAM,CAAC,QAAQ,CAAC,CAAC;IAC5B,CAAC;AACH,CAAC,CAAC;AAJW,QAAA,WAAW,eAItB"}
