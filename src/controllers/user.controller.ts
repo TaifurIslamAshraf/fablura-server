@@ -15,6 +15,7 @@ import { verifyJwtToken } from "../lib/verifyToken";
 import UserModel from "../models/user.model";
 import {
   activationUserService,
+  forgotPasswordService,
   registerUserService,
 } from "../services/user.services";
 
@@ -239,3 +240,98 @@ export const updateUserInfo = asyncHandler(
     });
   }
 );
+
+//update passowrd
+export const updatePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await UserModel.findById(res.locals.user._id).select(
+    "+password"
+  );
+  if (!user) {
+    errorMessage(res, 404, "User not found");
+  }
+  if (user?.isSocialAuth) {
+    errorMessage(res, 400, "you are not to able update password");
+  }
+
+  const isPasswordMatch = await user?.comparePassword(oldPassword);
+  if (!isPasswordMatch) {
+    errorMessage(res, 400, "Invalid old password");
+  }
+
+  if (user?.password) {
+    user.password = newPassword;
+  }
+
+  await user?.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Password update successfully",
+  });
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    errorMessage(res, 400, "Email is required");
+  }
+
+  const user = await UserModel.findOne({ email });
+  if (user?.isSocialAuth) {
+    errorMessage(res, 400, "You are signup wtih google");
+  }
+  if (!user) {
+    errorMessage(res, 404, "You dont have account with this email");
+  }
+
+  await forgotPasswordService(user?._id, email);
+
+  res.status(200).json({
+    success: true,
+    message: "Check you email",
+  });
+});
+
+export const forgotPasswordLinkValidation = asyncHandler(async (req, res) => {
+  const { userId, token } = req.params;
+  if (!userId || !token) {
+    res.status(400).send("<h1>Invalid Link. try again</h1>");
+  }
+
+  const decoded = verifyJwtToken(token, secret.forgotPasswordSecret);
+  if (!decoded) {
+    res.status(400).send("<h1>Invalid Link. try again</h1>");
+  }
+
+  res.redirect(`${secret.clientUrl}/resetPassword/${userId}/${token}`);
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { newPassword, token, userId } = req.body;
+
+  const user = await UserModel.findById(userId).select("+password");
+  if (!user) {
+    errorMessage(res, 400, "You dont have account with this email");
+  }
+  if (user?.isSocialAuth) {
+    errorMessage(res, 400, "you are not to able update password");
+  }
+
+  const decoded = verifyJwtToken(token, secret.forgotPasswordSecret);
+  if (!decoded) {
+    errorMessage(res, 400, "Invalid Reset password link");
+  }
+
+  if (user?.password) {
+    user.password = newPassword;
+  }
+
+  await user?.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Reset password successfully. please login",
+  });
+});

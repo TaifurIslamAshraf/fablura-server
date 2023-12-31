@@ -18,28 +18,36 @@ export const fileUploder = (
     },
   });
 
-  const fileFilters = (
+  const fileFilters = async (
     req: Request,
     file: Express.Multer.File,
     cb: FileFilterCallback
   ) => {
     const allowedFileType = ["png", "jpeg", "jpg", "webp"];
     const Fileextname = path.extname(file.originalname).substring(1);
-    if (!allowedFileType.includes(Fileextname)) {
+    const isFileSizeAllowed = file.size <= 2 * 1024 * 1024;
+    const isFileTypeAllowed = allowedFileType.includes(Fileextname);
+
+    if (!isFileTypeAllowed) {
       cb(new Error("Invalid file type"));
+    } else if (!isFileSizeAllowed) {
+      cb(new Error("File size exceeds the limit"));
+    } else {
+      cb(null, true);
     }
+
     cb(null, true);
   };
 
   const upload = singleUpload
     ? multer({
-        storage: storage,
         fileFilter: fileFilters,
+        storage: storage,
         limits: { fileSize: 1024 * 1024 * 2 },
       }).single(fieldName)
     : multer({
-        storage: storage,
         fileFilter: fileFilters,
+        storage: storage,
         limits: { fileSize: 1024 * 1024 * 2 },
       }).array(fieldName, 5);
 

@@ -2,12 +2,16 @@ import express from "express";
 
 import {
   activateUser,
+  forgotPassword,
+  forgotPasswordLinkValidation,
   getUserInfo,
   loginUser,
   logout,
   registerUser,
+  resetPassword,
   socialAuth,
   updateAccessToken,
+  updatePassword,
   updateUserInfo,
 } from "../controllers/user.controller";
 import { isAuthenticated } from "../middlewares/authGard";
@@ -16,6 +20,8 @@ import { validator } from "../middlewares/validator";
 import {
   activateUserSchema,
   loginUserSchema,
+  resetPasswordSchema,
+  updatePasswordSchema,
   userSchemaValidator,
 } from "../validators/user.schema";
 
@@ -34,5 +40,17 @@ userRoute.put(
   fileUploder("public/uploads/users", true, "avatar"),
   updateUserInfo
 );
+userRoute.put(
+  "/update-password",
+  isAuthenticated,
+  validator(updatePasswordSchema),
+  updatePassword
+);
+userRoute.post("/forgot-password", forgotPassword);
+userRoute.get(
+  "/reset-password-link-validation/:userId/:token",
+  forgotPasswordLinkValidation
+);
+userRoute.put("/reset-password", validator(resetPasswordSchema), resetPassword);
 
 export default userRoute;

@@ -55,6 +55,27 @@ export const loginUserSchema = z.object({
   }),
 });
 
+export const updatePasswordSchema = z.object({
+  body: z.object({
+    oldPassword: z
+      .string({ required_error: "Old Password is Required" })
+      .min(6, "Password should be at least 6 characters"),
+
+    newPassword: z
+      .string({ required_error: "New Password is Required" })
+      .min(6, "Password should be at least 6 characters"),
+  }),
+});
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    userId: z.string({ required_error: "userId is Required" }),
+    token: z.string({ required_error: "token is Required" }),
+
+    newPassword: z
+      .string({ required_error: "New Password is Required" })
+      .min(6, "Password should be at least 6 characters"),
+  }),
+});
 export const socialAuthSchema = z.object({
   body: z.object({
     fullName: z.string({
