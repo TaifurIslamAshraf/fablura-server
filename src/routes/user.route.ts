@@ -2,8 +2,10 @@ import express from "express";
 
 import {
   activateUser,
+  deleteUser,
   forgotPassword,
   forgotPasswordLinkValidation,
+  getAllUsers,
   getUserInfo,
   loginUser,
   logout,
@@ -13,8 +15,9 @@ import {
   updateAccessToken,
   updatePassword,
   updateUserInfo,
+  updateUserRole,
 } from "../controllers/user.controller";
-import { isAuthenticated } from "../middlewares/authGard";
+import { authorizeUser, isAuthenticated } from "../middlewares/authGard";
 import { fileUploder } from "../middlewares/uploadFile";
 import { validator } from "../middlewares/validator";
 import {
@@ -22,6 +25,7 @@ import {
   loginUserSchema,
   resetPasswordSchema,
   updatePasswordSchema,
+  updateUserRoleSchema,
   userSchemaValidator,
 } from "../validators/user.schema";
 
@@ -52,5 +56,24 @@ userRoute.get(
   forgotPasswordLinkValidation
 );
 userRoute.put("/reset-password", validator(resetPasswordSchema), resetPassword);
+userRoute.get(
+  "/all-users",
+  isAuthenticated,
+  authorizeUser("admin"),
+  getAllUsers
+);
+userRoute.put(
+  "/update-role",
+  validator(updateUserRoleSchema),
+  isAuthenticated,
+  authorizeUser("admin"),
+  updateUserRole
+);
+userRoute.delete(
+  "/delete-user/:userId",
+  isAuthenticated,
+  authorizeUser("admin"),
+  deleteUser
+);
 
 export default userRoute;

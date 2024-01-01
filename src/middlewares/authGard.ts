@@ -33,3 +33,17 @@ export const isAuthenticated = asyncHandler(
     next();
   }
 );
+
+export const authorizeUser = (...roles: string[]) => {
+  return asyncHandler(async (req, res, next) => {
+    if (!roles.includes(res.locals.user.role)) {
+      errorMessage(
+        res,
+        403,
+        `${res.locals.user.role} is not allowed to access this recourse`
+      );
+    }
+
+    next();
+  });
+};

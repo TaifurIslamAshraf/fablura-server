@@ -335,3 +335,54 @@ export const resetPassword = asyncHandler(async (req, res) => {
     message: "Reset password successfully. please login",
   });
 });
+
+export const getAllUsers = asyncHandler(async (req, res) => {
+  const users = await UserModel.find();
+  const userLength = await UserModel.countDocuments();
+  if (!users) {
+    errorMessage(res, 404, "Users not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "All User here",
+    users,
+    userLength,
+  });
+});
+
+export const updateUserRole = asyncHandler(async (req, res) => {
+  const { userId, role } = req.body;
+
+  const user = await UserModel.findByIdAndUpdate(
+    userId,
+    { role },
+    { new: true }
+  );
+  if (!user) {
+    errorMessage(res, 404, "User not found");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "User role update successfully",
+    user,
+  });
+});
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+  if (userId === res.locals.user._id) {
+    errorMessage(res, 400, "You are not able to delete your self");
+  }
+
+  const user = await UserModel.findByIdAndDelete(userId, { new: true });
+  if (!user) {
+    errorMessage(res, 404, "User not found!");
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "User deleted successfully",
+  });
+});

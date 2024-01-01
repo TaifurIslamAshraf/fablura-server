@@ -92,3 +92,9 @@ export const socialAuthSchema = z.object({
     }),
   }),
 });
+export const updateUserRoleSchema = z.object({
+  body: z.object({
+    userId: z.string({ required_error: "userId is Required" }),
+    role: z.enum(["admin", "user"]),
+  }),
+});
