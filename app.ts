@@ -9,6 +9,7 @@ import asyncHandler from "express-async-handler";
 import morgan from "morgan";
 
 import { errorHandler, notFound } from "./src/lib/errorHandler";
+import { categoryRoute, subcategoryRoute } from "./src/routes/category.route";
 import userRoute from "./src/routes/user.route";
 
 export const app = express();
@@ -40,6 +41,8 @@ app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
 
 //all routes here
 app.use("/api/v1/user", userRoute);
+app.use("/api/v1/category", categoryRoute);
+app.use("/api/v1/subcategory", subcategoryRoute);
 
 //test route
 app.get(
