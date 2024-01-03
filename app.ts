@@ -11,6 +11,7 @@ import morgan from "morgan";
 import { errorHandler, notFound } from "./src/lib/errorHandler";
 import bannerRoute from "./src/routes/banner.route";
 import { categoryRoute, subcategoryRoute } from "./src/routes/category.route";
+import productRoute from "./src/routes/product.route";
 import userRoute from "./src/routes/user.route";
 
 export const app = express();
@@ -45,6 +46,7 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/subcategory", subcategoryRoute);
 app.use("/api/v1/banner", bannerRoute);
+app.use("/api/v1/product", productRoute);
 
 //test route
 app.get(
