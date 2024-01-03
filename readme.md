@@ -8,36 +8,38 @@
   - POST /activate -> activate the user account
   - GET /profile -> Get user profile
   - PUT /:id -> Update user account
-  - DELETE /:id -> delete user account(Admin)
   - PUT /reset-password/:id -> reset password
   - POST /forgot-password -> forgot password
-  - PUT /ban/:id -> ban the user account(Admin)
-  - PUT /unban/:id -> unban the user(Admin)
-  - GET /export-user -> export all the users(Admin)
   - GET /all-users -> get all users with search & pagination
 
 - /api/auth (Jwt Auth)
 
-  - POST /login -> isLoggedOut -> user login
-  - GET /logout -> isLoggedIn -> user logout
+  - POST /login -> isAuthenticted -> isUserLogin
+  - GET /logout -> user logout
   - GET /refresh -> get refresh token
 
 - Middelware
 
-  - isLoggedIn
-  - isLoggedOut
-  - isAdmin
+  - isAuthenticated
+  - authorizeUser
   - uploadFiles
-  - getRefreshToken
   - validatior
 
-- /api/categories (CRUD)
+- /api/category (CRUD)
 
   - POST / -> Create the category(Admin)
   - GET / -> get all category(Admin)
   - POST / -> create a category(Admin)
   - PUT /:id -> update category(Admin)
-  - DELETE /:id -> delete a category(Admin)
+  - DELETE /:id -> delete a category(Admin) -- if delete category also delete subcategory
+
+- /api/subCateogry (CRUD)
+
+  - POST / -> Create the subcategory(Admin)
+  - GET / -> get all subcategory(Admin)
+  - POST / -> create a subcategory(Admin)
+  - PUT /:id -> update subcategory(Admin)
+  - DELETE /:id -> delete a subcategory(Admin)
 
 - /api/products (CRUD)
 

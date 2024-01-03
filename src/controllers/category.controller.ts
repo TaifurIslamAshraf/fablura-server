@@ -5,13 +5,17 @@ import { CategoryModel, SubCategoryModel } from "../models/category.model";
 
 // category crud endpoint
 export const createCategory = asyncHandler(async (req, res) => {
-  console.log(req.body);
   const { name } = req.body;
 
   const slug = slugify(name, {
     lower: true,
     trim: true,
   });
+
+  const isExistCategory = await CategoryModel.findOne({ name: name });
+  if (isExistCategory) {
+    errorMessage(res, 400, "category alredy exist");
+  }
 
   const category = await CategoryModel.create({
     name,
@@ -85,13 +89,16 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     { _id: id },
     { new: true }
   );
+
   if (!category) {
     errorMessage(res, 404, "Category not found!");
   }
 
+  const subcategory = await SubCategoryModel.deleteMany({ category: id });
+
   res.status(201).json({
     success: true,
-    message: "category deleted successfull",
+    message: "category and subcategory deleted successfull",
   });
 });
 
@@ -103,6 +110,11 @@ export const createSubCategory = asyncHandler(async (req, res) => {
     lower: true,
     trim: true,
   });
+
+  const isExistSubcategory = await SubCategoryModel.findOne({ name: name });
+  if (isExistSubcategory) {
+    errorMessage(res, 400, "subcategory alredy exist");
+  }
 
   const subcategory = await SubCategoryModel.create({
     name,
