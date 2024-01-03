@@ -48,6 +48,12 @@ export const errorHandler = (
     message = "Your Token is Expired. Try Again";
   }
 
+  // //multer error
+  // if (err instanceof multer.MulterError) {
+  //   statusCode = 500;
+  //   message = "There was an upload error!";
+  // }
+
   res.status(statusCode).json({
     succss: false,
     message,
