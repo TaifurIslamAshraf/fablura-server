@@ -12,7 +12,8 @@ export const fileUploder = (
     },
 
     filename: (req, file, cb) => {
-      const name = Date.now() + "-" + file.originalname;
+      const originalName = file.originalname.replace(/\s+/g, "-");
+      const name = Date.now() + "-" + originalName;
       cb(null, name);
     },
   });

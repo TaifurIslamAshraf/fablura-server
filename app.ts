@@ -9,6 +9,7 @@ import asyncHandler from "express-async-handler";
 import morgan from "morgan";
 
 import { errorHandler, notFound } from "./src/lib/errorHandler";
+import bannerRoute from "./src/routes/banner.route";
 import { categoryRoute, subcategoryRoute } from "./src/routes/category.route";
 import userRoute from "./src/routes/user.route";
 
@@ -43,6 +44,7 @@ app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/subcategory", subcategoryRoute);
+app.use("/api/v1/banner", bannerRoute);
 
 //test route
 app.get(
