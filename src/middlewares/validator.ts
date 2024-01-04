@@ -12,9 +12,6 @@ export const validator = (schema: AnyZodObject | ZodEffects<AnyZodObject>) => {
       next();
     } catch (error: any) {
       const errorMessage = error.errors.map((err: any) => ({
-        code: err.code,
-        expected: err.expected,
-        recevied: err.recevied,
         path: err.path.join("."),
         message: err.message,
       }));

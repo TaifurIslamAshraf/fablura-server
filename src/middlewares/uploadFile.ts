@@ -38,12 +38,12 @@ export const fileUploder = (
     ? multer({
         fileFilter: fileFilters,
         storage: storage,
-        limits: { fileSize: 1024 * 1024 * 2 },
+        limits: { fileSize: 1024 * 1024 * 5 },
       }).single(fieldName)
     : multer({
         fileFilter: fileFilters,
         storage: storage,
-        limits: { fileSize: 1024 * 1024 * 2 },
+        limits: { fileSize: 1024 * 1024 * 40 },
       }).array(fieldName, 5);
 
   return upload;

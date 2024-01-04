@@ -1,16 +1,16 @@
 import mongoose, { Document } from "mongoose";
 
-// export interface IPorduct extends Document {
-//   reviews?: [
-//     {
-//       user: string;
-//       name: string;
-//       rating: number;
-//       comment: string;
-//       cratedOn: Date;
-//     }
-//   ];
-// }
+export interface IPorductReviews {
+  reviews?: [
+    {
+      user: string;
+      name: string;
+      rating: number;
+      comment: string;
+      cratedOn: Date;
+    }
+  ];
+}
 
 export interface IElectronicsDescription {
   colors: string;
@@ -21,7 +21,7 @@ export interface IElectronicsDescription {
   features?: string;
   dimensions?: string;
   model?: string;
-  waterproof?: boolean;
+  waterproof?: string;
   powerSupply?: string;
   bodyMaterials?: string;
   chargingTime?: string;
@@ -37,16 +37,15 @@ export interface IProduct extends Document {
   slug: string;
   descriptionType: "electronics" | "foods";
   price: number;
-  estimatePrice?: string;
+  discountPrice?: string;
   stock: number;
   sold: number;
   shipping: number;
   images: [string];
-
+  numOfReviews: number;
+  ratings?: number;
   description: IElectronicsDescription | IFoodsDescription;
   category: mongoose.Schema.Types.ObjectId;
   subcategory?: string;
+  reviews: IPorductReviews;
 }
-
-// numOfReviews: number;
-// ratings?: number;

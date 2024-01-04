@@ -9,7 +9,7 @@ export const createBanner = asyncHandler(async (req, res) => {
 
   if (category && bannerType !== "categoryBanner") {
     if (req.file) {
-      deleteImage(req.file.path);
+      await deleteImage(req.file.path);
     }
     errorMessage(res, 400, "Your banner type should be categoryBanner");
   }
