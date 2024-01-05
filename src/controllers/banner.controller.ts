@@ -13,6 +13,12 @@ export const createBanner = asyncHandler(async (req, res) => {
     }
     errorMessage(res, 400, "Your banner type should be categoryBanner");
   }
+  if (bannerType === "categoryBanner" && !category) {
+    if (req.file) {
+      await deleteImage(req.file.path);
+    }
+    errorMessage(res, 400, "category is required");
+  }
 
   if (!req.file) {
     errorMessage(res, 400, "Banner image is required");

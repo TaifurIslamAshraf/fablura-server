@@ -37,7 +37,7 @@ export const ProductSchema = z.object({
     stock: z.number({ required_error: "Product stock is required" }),
     sold: z.number().optional(),
     shipping: z.number({ required_error: "Product shipping is required" }),
-    subcategory: z.string().optional(),
+    subcategory: z.string({ required_error: "subcategory required" }),
     category: z.string({ required_error: "product category is required" }),
     // description: z
     //   .union([ElectronicsDescriptionSchema, FoodsDescriptionSchema])

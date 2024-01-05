@@ -1,16 +1,14 @@
 import asyncHandler from "express-async-handler";
-import slugify from "slugify";
+
 import { errorMessage } from "../lib/errorHandler";
+import { slugify } from "../lib/slugify";
 import { CategoryModel, SubCategoryModel } from "../models/category.model";
 
 // category crud endpoint
 export const createCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
 
-  const slug = slugify(name, {
-    lower: true,
-    trim: true,
-  });
+  const slug = slugify(name);
 
   const isExistCategory = await CategoryModel.findOne({ name: name });
   if (isExistCategory) {
@@ -59,10 +57,7 @@ export const getSignleCategory = asyncHandler(async (req, res) => {
 export const updateCategory = asyncHandler(async (req, res) => {
   const { name, id } = req.body;
 
-  const slug = slugify(name, {
-    lower: true,
-    trim: true,
-  });
+  const slug = slugify(name);
 
   const category = await CategoryModel.findByIdAndUpdate(
     id,
@@ -106,10 +101,7 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 export const createSubCategory = asyncHandler(async (req, res) => {
   const { name, category } = req.body;
 
-  const slug = slugify(name, {
-    lower: true,
-    trim: true,
-  });
+  const slug = slugify(name);
 
   const isExistSubcategory = await SubCategoryModel.findOne({ name: name });
   if (isExistSubcategory) {
@@ -157,10 +149,7 @@ export const getSignleSubCategory = asyncHandler(async (req, res) => {
 export const updateSubCategory = asyncHandler(async (req, res) => {
   const { name, id } = req.body;
 
-  const slug = slugify(name, {
-    lower: true,
-    trim: true,
-  });
+  const slug = slugify(name);
 
   const subcategory = await SubCategoryModel.findByIdAndUpdate(
     id,

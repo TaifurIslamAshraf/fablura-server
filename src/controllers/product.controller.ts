@@ -1,9 +1,11 @@
 import asyncHandler from "express-async-handler";
-import slugify from "slugify";
+
 import { deleteMultipleImages } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
+import { slugify } from "../lib/slugify";
 import ProductModel from "../models/product.model";
 
+// create products -- admin
 export const createProduct = asyncHandler(async (req, res) => {
   const {
     name,
@@ -51,10 +53,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   ).map((file: Express.Multer.File) => file.path);
 
   if (req.files) {
-    productData = {
-      ...productData,
-      images: imagesPath,
-    };
+    productData.images = imagesPath;
   }
 
   const nameisExitst = await ProductModel.findOne({ name });
@@ -98,5 +97,201 @@ export const createProduct = asyncHandler(async (req, res) => {
     success: true,
     message: "Product created successfully",
     product,
+  });
+});
+
+//update product -- admin
+export const updateProduct = asyncHandler(async (req, res) => {
+  const {
+    id,
+    name,
+    price,
+    discountPrice,
+    stock,
+    sold,
+    shipping,
+    category,
+    subcategory,
+    descriptionType,
+
+    ingredients,
+    foodDesc,
+    color,
+    brand,
+    warrantyPeriod,
+    countryOrigin,
+    batteryCapacity,
+    features,
+    dimensions,
+    model,
+    waterproof,
+    powerSupply,
+    bodyMaterials,
+    chargingTime,
+  } = req.body;
+
+  let productData: any = {
+    name,
+    price,
+    discountPrice,
+    stock,
+    sold,
+    shipping,
+    category,
+    subcategory,
+  };
+
+  if (name) {
+    productData.slug = slugify(name);
+  }
+
+  const imagesPath = (req.files as Express.Multer.File[]).map(
+    (file: Express.Multer.File) => file.path
+  );
+
+  const existingProduct = await ProductModel.findById(id);
+  if (!existingProduct) {
+    deleteMultipleImages(imagesPath);
+    errorMessage(res, 404, "Product not found");
+  }
+
+  const productWithSameName = await ProductModel.findOne({ name });
+  if (productWithSameName) {
+    deleteMultipleImages(imagesPath);
+    errorMessage(res, 400, "Product name should be unique");
+  }
+
+  // Add description field based on descriptionType
+  let updatedDescription: any = {};
+
+  if (
+    descriptionType === "foods" ||
+    existingProduct?.descriptionType === "foods"
+  ) {
+    updatedDescription = {
+      ...existingProduct?.description,
+      ...(ingredients && { ingredients }),
+      ...(foodDesc && { foodDesc }),
+    };
+  } else if (
+    descriptionType === "electronics" ||
+    existingProduct?.descriptionType === "electronics"
+  ) {
+    updatedDescription = {
+      ...existingProduct?.description,
+      ...(color && { color }),
+      ...(brand && { brand }),
+      ...(warrantyPeriod && { warrantyPeriod }),
+      ...(countryOrigin && { countryOrigin }),
+      ...(batteryCapacity && { batteryCapacity }),
+      ...(features && { features }),
+      ...(dimensions && { dimensions }),
+      ...(model && { model }),
+      ...(waterproof && { waterproof }),
+      ...(powerSupply && { powerSupply }),
+      ...(bodyMaterials && { bodyMaterials }),
+      ...(chargingTime && { chargingTime }),
+    };
+  }
+
+  if (imagesPath.length > 0) {
+    productData.images = imagesPath;
+  }
+
+  productData.description = updatedDescription;
+  const updatedProduct = await ProductModel.findByIdAndUpdate(id, productData, {
+    new: true,
+  });
+
+  if (updatedProduct && existingProduct?.images && imagesPath.length > 0) {
+    deleteMultipleImages(existingProduct.images);
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Product updated successfull",
+    updatedProduct,
+  });
+});
+
+//delete product
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const product = await ProductModel.findById(id);
+  if (!product) {
+    errorMessage(res, 404, "Product not found !");
+  }
+
+  if (product?.images) {
+    await deleteMultipleImages(product.images);
+  }
+
+  await product?.deleteOne();
+
+  res.status(200).json({
+    success: true,
+    message: "Product deleted successfull",
+  });
+});
+
+//get single product
+export const getSingleProduct = asyncHandler(async (req, res) => {
+  const { slug } = req.params;
+
+  const product = await ProductModel.findOne({ slug }).populate("category");
+  if (!product) {
+    errorMessage(res, 404, "Product not found !");
+  }
+
+  res.status(200).json({
+    success: true,
+    product,
+  });
+});
+
+// get all products
+export const getAllProducts = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 8;
+  const search = req.query.search || "";
+  const category = req.query.category || "";
+  const subcategory = req.query.subcategory || "";
+
+  const searchRegExp = new RegExp(".*" + search + ".*", "i");
+  const filter: any =
+    {
+      $or: [{ name: { $regex: searchRegExp } }],
+    } || {};
+
+  if (category) {
+    filter.category = category;
+  }
+  if (subcategory) {
+    filter.subcategory = subcategory;
+  }
+
+  const products = await ProductModel.find(filter)
+    .populate(["category", "subcategory"])
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  if (!products || products.length < 1) {
+    errorMessage(res, 404, "No Product availble");
+  }
+  const productCount = await ProductModel.countDocuments(filter);
+
+  res.status(200).json({
+    success: true,
+    message: "All products here",
+    products,
+    pagination: {
+      numberOfProducts: productCount,
+      totalPage: Math.ceil(productCount / limit),
+      currentPage: page,
+      nextPage: page + 1,
+      prevPage: page - 1,
+    },
   });
 });

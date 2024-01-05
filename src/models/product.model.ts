@@ -100,6 +100,7 @@ const productSchema: Schema<IProduct> = new Schema(
       type: String,
       required: [true, "product slug is required"],
       lowercase: true,
+      trim: true,
     },
     descriptionType: {
       type: String,
@@ -127,16 +128,15 @@ const productSchema: Schema<IProduct> = new Schema(
       type: Number,
       required: [true, "Product shipping price is required"],
     },
-    images: [
-      {
-        type: String,
-        required: [true, "Product images is required"],
-      },
-    ],
+    images: {
+      type: [String],
+      required: [true, "Product images is required"],
+    },
 
     subcategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubCategory",
+      // required: [true, "subCategory id is required"],
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
