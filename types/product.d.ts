@@ -1,15 +1,12 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IPorductReviews {
-  reviews?: [
-    {
-      user: string;
-      name: string;
-      rating: number;
-      comment: string;
-      cratedOn: Date;
-    }
-  ];
+  user: mongoose.Schema.Types.ObjectId;
+  fullName: string;
+  rating: number;
+  comment: string;
+  approved?: boolean;
+  createdOn?: Date;
 }
 
 export interface IElectronicsDescription {
@@ -47,5 +44,5 @@ export interface IProduct extends Document {
   description: IElectronicsDescription | IFoodsDescription;
   category: mongoose.Schema.Types.ObjectId;
   subcategory?: string;
-  reviews: IPorductReviews;
+  reviews?: IPorductReviews[];
 }

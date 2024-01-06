@@ -7,31 +7,32 @@ import {
 } from "../../types/product";
 
 const productReviews: Schema<IPorductReviews> = new mongoose.Schema({
-  reviews: [
-    {
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: [true, "Review user is required"],
-      },
-      name: {
-        type: String,
-        required: [true, "Review user name is required"],
-      },
-      rating: {
-        type: Number,
-        required: [true, "Review rating is required"],
-      },
-      comment: {
-        type: String,
-        required: [true, "Review comment is required"],
-      },
-      createdOn: {
-        type: Date,
-        default: Date.now(),
-      },
-    },
-  ],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: [true, "Review user is required"],
+  },
+  fullName: {
+    type: String,
+    required: [true, "Review user name is required"],
+  },
+  rating: {
+    type: Number,
+    required: [true, "Review rating is required"],
+    maxlength: [5, "max rating number 5"],
+  },
+  comment: {
+    type: String,
+    required: [true, "Review comment is required"],
+  },
+  approved: {
+    type: Boolean,
+    default: false,
+  },
+  createdOn: {
+    type: Date,
+    default: Date.now(),
+  },
 });
 
 const electronicsSchema: Schema<IElectronicsDescription> =
@@ -158,7 +159,7 @@ const productSchema: Schema<IProduct> = new Schema(
       default: 0,
     },
 
-    reviews: productReviews,
+    reviews: [productReviews],
   },
   {
     timestamps: true,

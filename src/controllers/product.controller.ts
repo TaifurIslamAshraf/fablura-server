@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 
+import { IPorductReviews } from "../../types/product";
 import { deleteMultipleImages } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
 import { slugify } from "../lib/slugify";
@@ -44,6 +45,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     shipping,
     category,
     subcategory,
+    reviews: [],
   };
 
   productData.slug = slugify(name);
@@ -257,10 +259,18 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   const search = req.query.search || "";
   const category = req.query.category || "";
   const subcategory = req.query.subcategory || "";
+  const minPrice = parseInt(req.query.minPrice as string) || 0;
+  const maxPrice =
+    parseInt(req.query.maxPrice as string) || Number.MAX_SAFE_INTEGER;
+  const ratings = parseFloat(req.query.ratings as string) || 0;
 
   const searchRegExp = new RegExp(".*" + search + ".*", "i");
   const filter: any =
     {
+      // category: category,
+      // subcategory: subcategory,
+      // price: { $gte: minPrice, $lte: maxPrice },
+      // ratings: { $gte: ratings },
       $or: [{ name: { $regex: searchRegExp } }],
     } || {};
 
@@ -270,6 +280,8 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   if (subcategory) {
     filter.subcategory = subcategory;
   }
+  filter.price = { $lte: maxPrice, $gte: minPrice };
+  filter.ratings = { $gte: ratings };
 
   const products = await ProductModel.find(filter)
     .populate(["category", "subcategory"])
@@ -293,5 +305,123 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       nextPage: page + 1,
       prevPage: page - 1,
     },
+  });
+});
+
+//create review
+export const createReviews = asyncHandler(async (req, res) => {
+  const { rating, comment, productId } = req.body;
+  const user = res.locals.user;
+
+  const review: IPorductReviews = {
+    user: user._id,
+    fullName: user.fullName,
+    rating,
+    comment,
+  };
+
+  const product = await ProductModel.findById(productId);
+  if (!product) {
+    errorMessage(res, 404, "Product not found");
+  }
+
+  if (product?.reviews) {
+    const isReviewd = product?.reviews.some(
+      (rev) => rev.user.toString() === user._id.toString()
+    );
+
+    if (isReviewd) {
+      errorMessage(res, 400, "You alredy give a review");
+    }
+  }
+
+  if (product?.reviews) {
+    product.reviews.push(review);
+    product.numOfReviews = product.reviews.length;
+  }
+
+  //product rating avarage
+  let avg = 0;
+  product?.reviews?.forEach((value) => {
+    avg += value.rating;
+  });
+
+  if (product?.reviews) {
+    product.ratings = avg / product.reviews.length;
+  }
+
+  await product?.save({ validateBeforeSave: true });
+
+  res.status(200).json({
+    success: true,
+    message: "review created successfull",
+    review: product?.reviews,
+  });
+});
+
+//update review status
+export const updateReviewStatus = asyncHandler(async (req, res) => {
+  const { reviewId, productId, approved } = req.body;
+
+  const product = await ProductModel.findById(productId);
+  if (!product) {
+    errorMessage(res, 404, "Product not found");
+  }
+
+  if (product?.reviews) {
+    const review = product.reviews.find((value: any) => {
+      return value._id.toString() === reviewId;
+    });
+
+    if (review?.approved !== undefined) {
+      review.approved = Boolean(approved);
+    } else {
+      errorMessage(res, 404, "Review not exits");
+    }
+  }
+  await product?.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Product review status updated",
+    product,
+  });
+});
+
+//delete review --admin
+export const deleteReview = asyncHandler(async (req, res) => {
+  const { reviewId, productId } = req.params;
+
+  const product = await ProductModel.findById(productId);
+  if (!product) {
+    errorMessage(res, 404, "Product not found");
+  }
+
+  if (product?.reviews) {
+    const productIndex = product?.reviews?.findIndex(
+      (value: any) => value._id.toString() === reviewId.toString()
+    );
+    if (productIndex === -1) {
+      errorMessage(res, 404, "review not found");
+    }
+    product?.reviews?.splice(productIndex, 1);
+  }
+
+  let avg = 0;
+  product?.reviews?.forEach((value) => {
+    avg += value.rating;
+  });
+
+  if (product?.reviews) {
+    product.ratings = avg / product.reviews.length;
+    product.numOfReviews = product.reviews.length;
+  }
+
+  await product?.save({ validateBeforeSave: true });
+
+  res.status(200).json({
+    success: true,
+    message: "Product review deleted successfully",
+    product,
   });
 });

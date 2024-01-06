@@ -44,3 +44,30 @@ export const ProductSchema = z.object({
     //   .optional(),
   }),
 });
+
+export const ProductFilterSchema = z.object({
+  query: z.object({
+    page: z.string().optional(),
+    category: z.string().optional(),
+    subCategory: z.string().optional(),
+    price: z.string().optional(),
+    maxPrice: z.string().optional(),
+    minPrice: z.string().optional(),
+    ratings: z.string().optional(),
+    search: z.string().optional(),
+  }),
+});
+
+export const CreateProductReviewSchema = z.object({
+  body: z.object({
+    rating: z.number({ required_error: "Review rating is required" }),
+    comment: z.string({ required_error: "Review comment is required" }),
+  }),
+});
+export const UpdateProductReviewSchema = z.object({
+  body: z.object({
+    approved: z.boolean({ required_error: "Review status is required" }),
+    productId: z.string({ required_error: "ProductId is required" }),
+    reviewId: z.string({ required_error: "ReviewId is required" }),
+  }),
+});
