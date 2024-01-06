@@ -425,3 +425,41 @@ export const deleteReview = asyncHandler(async (req, res) => {
     product,
   });
 });
+
+//get product reviews
+export const getProductReviews = asyncHandler(async (req, res) => {
+  const { userId, productId } = req.body;
+
+  const product = await ProductModel.findById(productId);
+  if (!product) {
+    errorMessage(res, 404, "Products not found");
+  }
+
+  let reviews: any = product?.reviews || [];
+
+  let productReviews: any = [];
+
+  //check if user give a reviews
+  if (userId && reviews.length > 0) {
+    reviews.forEach((rev: IPorductReviews) => {
+      if (rev.user.toString() === userId) {
+        productReviews.push(rev);
+      }
+    });
+  }
+
+  //check if review is approved
+  if (reviews.length > 0) {
+    reviews.forEach((rev: IPorductReviews) => {
+      if (rev.approved) {
+        productReviews.push(rev);
+      }
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "all product reviews",
+    productReviews,
+  });
+});

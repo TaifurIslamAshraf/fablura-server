@@ -164,7 +164,6 @@ export const getUserInfo = asyncHandler(
     if (!user) {
       errorMessage(res, 404, "User not found");
     }
-    console.log(user?.avatar);
 
     res.status(200).json({
       success: true,

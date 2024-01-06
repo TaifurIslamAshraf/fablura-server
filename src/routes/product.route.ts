@@ -5,6 +5,7 @@ import {
   deleteProduct,
   deleteReview,
   getAllProducts,
+  getProductReviews,
   getSingleProduct,
   updateProduct,
   updateReviewStatus,
@@ -68,5 +69,6 @@ productRoute.delete(
   authorizeUser("admin"),
   deleteReview
 );
+productRoute.get("/all-reviews", getProductReviews);
 
 export default productRoute;
