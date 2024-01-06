@@ -1,6 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
 
-//input data: address, fullname, phone, ordernots, quentity, paymentType
 export const orderSchema = new Schema(
   {
     shippingInfo: {
@@ -16,14 +15,11 @@ export const orderSchema = new Schema(
         type: String,
         required: [true, "Phone number is required"],
       },
-      orderNots: {
-        type: String,
-      },
     },
 
     orderItems: [
       {
-        name: {
+        productName: {
           type: String,
           required: [true, "Product name is required"],
         },
@@ -47,6 +43,10 @@ export const orderSchema = new Schema(
       },
     ],
 
+    orderNots: {
+      type: String,
+    },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -58,16 +58,14 @@ export const orderSchema = new Schema(
       default: "Pending",
     },
 
-    paymentInfo: {
-      orderId: {
-        type: String,
-        required: [true, "OrderId is required"],
-      },
+    orderId: {
+      type: String,
+      required: [true, "OrderId is required"],
+    },
 
-      paymentType: {
-        type: String,
-        required: [true, "Payment Type is required"],
-      },
+    paymentType: {
+      type: String,
+      required: [true, "Payment Type is required"],
     },
 
     itemsPrice: {

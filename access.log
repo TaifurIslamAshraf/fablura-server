@@ -166,3 +166,8 @@
 ::1 - - [06/Jan/2024:14:07:17 +0000] "POST /api/v1/user/login HTTP/1.1" 200 573 "-" "PostmanRuntime/7.36.0"
 ::1 - - [06/Jan/2024:14:07:30 +0000] "GET /api/v1/product/all-reviews HTTP/1.1" 200 434 "-" "PostmanRuntime/7.36.0"
 ::1 - - [06/Jan/2024:14:07:38 +0000] "GET /api/v1/product/all-reviews HTTP/1.1" 200 250 "-" "PostmanRuntime/7.36.0"
+::1 - - [06/Jan/2024:15:48:48 +0000] "POST /api/v1/order/create-order HTTP/1.1" 201 669 "-" "PostmanRuntime/7.36.0"
+::1 - - [06/Jan/2024:15:49:00 +0000] "POST /api/v1/order/create-order HTTP/1.1" 400 67 "-" "PostmanRuntime/7.36.0"
+::1 - - [06/Jan/2024:15:51:44 +0000] "POST /api/v1/order/create-order HTTP/1.1" 201 708 "-" "PostmanRuntime/7.36.0"
+::1 - - [06/Jan/2024:15:51:58 +0000] "POST /api/v1/order/create-order HTTP/1.1" 400 64 "-" "PostmanRuntime/7.36.0"
+::1 - - [06/Jan/2024:15:52:32 +0000] "POST /api/v1/order/create-order HTTP/1.1" 201 674 "-" "PostmanRuntime/7.36.0"
