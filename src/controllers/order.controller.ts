@@ -119,3 +119,70 @@ export const getUserOrders = asyncHandler(async (req, res) => {
     userOrders,
   });
 });
+
+export const updateOrderStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { orderStatus } = req.body;
+
+  const order = await OrderModel.findById(id);
+  if (!order) {
+    errorMessage(res, 404, "Order not found");
+  }
+
+  if (order?.orderStatus === "Delivered") {
+    errorMessage(res, 400, "Order alredy deliverd");
+  }
+  if (order?.orderStatus) {
+    order.orderStatus = orderStatus;
+  }
+
+  if (orderStatus === "Delivered" && order && order.deliveredAt !== undefined) {
+    order.deliveredAt = new Date(Date.now());
+  }
+
+  await order?.save({ validateBeforeSave: true });
+
+  res.status(200).json({
+    success: true,
+    message: "Order status updated successfull",
+    order,
+  });
+});
+
+//get all orders
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const orders = await OrderModel.find();
+  if (!orders) {
+    errorMessage(res, 404, "Orders not found");
+  }
+
+  let totalOrdersAmount = 0;
+
+  orders.forEach((value) => {
+    totalOrdersAmount += value.totalAmount;
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Your all order here",
+    totalOrdersAmount,
+    orders,
+  });
+});
+
+//delete order
+export const deleteOrders = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const order = await OrderModel.findById(id);
+  if (!order) {
+    errorMessage(res, 200, "order not found");
+  }
+
+  await OrderModel.findByIdAndDelete(id, { new: true });
+
+  res.status(200).json({
+    success: true,
+    message: "Order deleted successfully",
+  });
+});

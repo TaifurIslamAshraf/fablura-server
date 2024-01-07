@@ -28,3 +28,34 @@ export const createOrderSchema = z.object({
       .optional(),
   }),
 });
+
+export const updateOrderStatusSchema = z.object({
+  body: z.object({
+    orderStatus: z.enum([
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Cancelled",
+    ]),
+  }),
+  params: z.object({
+    id: z
+      .string({ required_error: "params id is required" })
+      .refine(
+        (value) => mongoose.Types.ObjectId.isValid(value),
+        "Invalid order id"
+      ),
+  }),
+});
+
+export const deleteOrderSchema = z.object({
+  params: z.object({
+    id: z
+      .string({ required_error: "Order id is required" })
+      .refine(
+        (value) => mongoose.Types.ObjectId.isValid(value),
+        "Invalid order id"
+      ),
+  }),
+});
