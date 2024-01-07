@@ -205,3 +205,4 @@
 ::1 - - [07/Jan/2024:02:45:14 +0000] "GET /api/v1/order/user-orders?userId=659a0f747ea68df08d1aa981 HTTP/1.1" 200 1361 "-" "PostmanRuntime/7.36.0"
 ::1 - - [07/Jan/2024:02:45:40 +0000] "GET /api/v1/order/user-orders HTTP/1.1" 200 678 "-" "PostmanRuntime/7.36.0"
 ::1 - - [07/Jan/2024:02:45:57 +0000] "GET /api/v1/order/user-orders?userId=659a0f747ea68df08d1aa981 HTTP/1.1" 200 1361 "-" "PostmanRuntime/7.36.0"
+::1 - - [07/Jan/2024:03:30:59 +0000] "POST /api/v1/order/create-order HTTP/1.1" 201 711 "-" "PostmanRuntime/7.36.0"
