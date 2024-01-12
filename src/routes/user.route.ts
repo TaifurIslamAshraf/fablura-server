@@ -14,6 +14,7 @@ import {
   socialAuth,
   updateAccessToken,
   updatePassword,
+  updateUserAvatar,
   updateUserInfo,
   updateUserRole,
 } from "../controllers/user.controller";
@@ -38,11 +39,12 @@ userRoute.get("/logout", isAuthenticated, logout);
 userRoute.get("/refresh", updateAccessToken);
 userRoute.get("/me", isAuthenticated, getUserInfo);
 userRoute.get("/social-auth", socialAuth);
+userRoute.put("/update-info", isAuthenticated, updateUserInfo);
 userRoute.put(
-  "/update-info",
+  "/update-avatar",
   isAuthenticated,
   fileUploder("public/uploads/users", true, "avatar"),
-  updateUserInfo
+  updateUserAvatar
 );
 userRoute.put(
   "/update-password",

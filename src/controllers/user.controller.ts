@@ -119,6 +119,10 @@ export const updateAccessToken = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const refresh_token = req.cookies.refresh_token as string;
 
+    if (!refresh_token) {
+      errorMessage(res, 400, "Please login to access this recourse");
+    }
+
     const decoded = verifyJwtToken(
       refresh_token,
       secret.refreshTokenSecret
@@ -190,6 +194,35 @@ export const socialAuth = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
+export const updateUserAvatar = asyncHandler(async (req, res) => {
+  const userId = res.locals.user._id;
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    errorMessage(res, 404, "User not found");
+  }
+  if (!req.file) {
+    errorMessage(res, 404, "Image is required");
+  } else {
+    await deleteImage(user?.avatar as string);
+  }
+
+  if (user && !user.avatar) {
+    user.avatar = "";
+  }
+
+  if (user && req.file?.path) {
+    user.avatar = req.file.path;
+  }
+
+  await user?.save();
+
+  res.status(200).json({
+    success: true,
+    message: "User avatar updated successfull",
+    user,
+  });
+});
+
 export const updateUserInfo = asyncHandler(
   async (req: Request, res: Response) => {
     const { fullName, phone, address } = req.body;
@@ -203,9 +236,6 @@ export const updateUserInfo = asyncHandler(
       errorMessage(res, 404, "User not found");
     }
 
-    if (req.file) {
-      await deleteImage(user?.avatar as string);
-    }
     let updateFields: Record<string, any> = {};
 
     if (fullName) {
@@ -216,9 +246,6 @@ export const updateUserInfo = asyncHandler(
     }
     if (address) {
       updateFields.address = address;
-    }
-    if (req.file?.path) {
-      updateFields.avatar = req.file.path;
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(

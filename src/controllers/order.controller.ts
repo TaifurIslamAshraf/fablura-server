@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import OrderModel from "../models/order.mode";
-import { updateProductStockSold } from "./../services/order.services";
+import { updateProductStockSold } from "../services/order.services";
 
 export const createOrder = asyncHandler(async (req, res) => {
   const {
@@ -53,10 +53,6 @@ export const createOrder = asyncHandler(async (req, res) => {
       maxAge: 365 * 24 * 60 * 60 * 1000,
     });
   }
-
-  order.orderItems.map(async (value) => {
-    await updateProductStockSold(value.product.toString(), value.quentity);
-  });
 
   res.status(201).json({
     success: true,
@@ -136,8 +132,18 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
     order.orderStatus = orderStatus;
   }
 
-  if (orderStatus === "Delivered" && order && order.deliveredAt !== undefined) {
-    order.deliveredAt = new Date(Date.now());
+  if (orderStatus === "Delivered" && order) {
+    //update stock and sold
+    order.orderItems.map(async (value) => {
+      await updateProductStockSold(value.product.toString(), value.quentity);
+    });
+
+    //update deliveredAt
+    if (!order.deliveredAt) {
+      order.deliveredAt = new Date();
+    } else {
+      order.deliveredAt = new Date(Date.now());
+    }
   }
 
   await order?.save({ validateBeforeSave: true });
@@ -151,7 +157,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
 //get all orders
 export const getAllOrders = asyncHandler(async (req, res) => {
-  const orders = await OrderModel.find();
+  const orders = await OrderModel.find().sort({ createdAt: -1 });
   if (!orders) {
     errorMessage(res, 404, "Orders not found");
   }

@@ -7,21 +7,21 @@ import BannerModel from "../models/banner.model";
 export const createBanner = asyncHandler(async (req, res) => {
   const { bannerType, category } = req.body;
 
-  if (category && bannerType !== "categoryBanner") {
-    if (req.file) {
-      await deleteImage(req.file.path);
-    }
-    errorMessage(res, 400, "Your banner type should be categoryBanner");
+  if (!req.file) {
+    errorMessage(res, 400, "Banner image is required");
   }
+
   if (bannerType === "categoryBanner" && !category) {
     if (req.file) {
       await deleteImage(req.file.path);
     }
     errorMessage(res, 400, "category is required");
   }
-
-  if (!req.file) {
-    errorMessage(res, 400, "Banner image is required");
+  if (category && bannerType !== "categoryBanner") {
+    if (req.file) {
+      await deleteImage(req.file.path);
+    }
+    errorMessage(res, 400, "Your banner type should be categoryBanner");
   }
 
   const banner = await BannerModel.create({
