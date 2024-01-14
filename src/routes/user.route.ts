@@ -54,7 +54,7 @@ userRoute.put(
 );
 userRoute.post("/forgot-password", forgotPassword);
 userRoute.get(
-  "/reset-password-link-validation/:userId/:token",
+  "/forgot-password-link-validation/:userId/:token",
   forgotPasswordLinkValidation
 );
 userRoute.put("/reset-password", validator(resetPasswordSchema), resetPassword);

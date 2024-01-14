@@ -5,6 +5,7 @@ import {
   deleteCategory,
   deleteSubCategory,
   getAllCategory,
+  getAllCategoryAndSubCategory,
   getAllSubCategory,
   getSignleCategory,
   getSignleSubCategory,
@@ -21,6 +22,9 @@ import {
 } from "../validators/category.schema";
 
 export const categoryRoute = express.Router();
+
+// get all category and subcategory
+categoryRoute.get("/category-subcategory", getAllCategoryAndSubCategory);
 
 categoryRoute.post(
   "/create-category",

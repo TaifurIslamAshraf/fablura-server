@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { JwtPayload } from "jsonwebtoken";
+import mongoose from "mongoose";
 import { IActivationInfo, IUser } from "../../types/user";
 import secret from "../config/secret";
 import { deleteImage } from "../lib/deleteImage";
@@ -323,6 +324,10 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 export const forgotPasswordLinkValidation = asyncHandler(async (req, res) => {
   const { userId, token } = req.params;
   if (!userId || !token) {
+    res.status(400).send("<h1>Invalid Link. try again</h1>");
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
     res.status(400).send("<h1>Invalid Link. try again</h1>");
   }
 

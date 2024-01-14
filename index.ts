@@ -5,7 +5,7 @@ import secret from "./src/config/secret";
 const startServer = () => {
   try {
     app.listen(secret.PORT, () => {
-      console.log(`Server is running at http://localhost:${8000}`);
+      console.log(`Server is running at http://localhost:${secret.PORT}`);
     });
   } catch (error) {
     console.log(error);

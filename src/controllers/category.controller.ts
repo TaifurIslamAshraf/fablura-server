@@ -4,6 +4,46 @@ import { errorMessage } from "../lib/errorHandler";
 import { slugify } from "../lib/slugify";
 import { CategoryModel, SubCategoryModel } from "../models/category.model";
 
+//get all category and sub category
+export const getAllCategoryAndSubCategory = asyncHandler(async (req, res) => {
+  const category = await CategoryModel.aggregate([
+    {
+      $lookup: {
+        from: "subcategories",
+        localField: "_id",
+        foreignField: "category",
+        as: "subcategory",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        slug: 1,
+        subcategory: {
+          $map: {
+            input: "$subcategory",
+            as: "subcategory",
+            in: {
+              _id: "$$subcategory._id",
+              name: "$$subcategory.name",
+              slug: "$$subcategory.slug",
+            },
+          },
+        },
+      },
+    },
+  ]);
+  if (!category) {
+    errorMessage(res, 404, "Category not found");
+  }
+
+  res.status(200).json({
+    message: "Category and subcategory",
+    category,
+  });
+});
+
 // category crud endpoint
 export const createCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
