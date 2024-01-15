@@ -12,5 +12,6 @@ export const updateProductStockSold = async (
 
   product.stock -= quentity;
   product.sold += quentity;
+  product.soldAt = new Date();
   await product.save({ validateBeforeSave: true });
 };

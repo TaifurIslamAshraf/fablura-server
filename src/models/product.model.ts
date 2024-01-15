@@ -125,6 +125,10 @@ const productSchema: Schema<IProduct> = new Schema(
       type: Number,
       default: 0,
     },
+    soldAt: {
+      type: Date,
+      default: Date.now(),
+    },
     shipping: {
       type: Number,
       required: [true, "Product shipping price is required"],

@@ -308,6 +308,20 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   });
 });
 
+//get resent sold product
+export const getResentSoldProducts = asyncHandler(async (req, res) => {
+  const product = await ProductModel.find().sort({ soldAt: -1 }).limit(10);
+  if (!product) {
+    errorMessage(res, 404, "Product not found");
+  }
+
+  res.status(200).json({
+    message: "Resently sold product",
+    success: true,
+    product,
+  });
+});
+
 //create review
 export const createReviews = asyncHandler(async (req, res) => {
   const { rating, comment, productId } = req.body;

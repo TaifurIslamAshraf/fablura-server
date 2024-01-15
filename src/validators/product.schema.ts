@@ -36,6 +36,7 @@ export const ProductSchema = z.object({
     discountPrice: z.string().optional(),
     stock: z.number({ required_error: "Product stock is required" }),
     sold: z.number().optional(),
+    soldAt: z.date().optional(),
     shipping: z.number({ required_error: "Product shipping is required" }),
     subcategory: z.string({ required_error: "subcategory required" }),
     category: z.string({ required_error: "product category is required" }),

@@ -6,6 +6,7 @@ import {
   deleteReview,
   getAllProducts,
   getProductReviews,
+  getResentSoldProducts,
   getSingleProduct,
   updateProduct,
   updateReviewStatus,
@@ -50,6 +51,7 @@ productRoute.get(
   validator(ProductFilterSchema),
   getAllProducts
 );
+productRoute.get("/sold-product", getResentSoldProducts);
 productRoute.put(
   "/create-review",
   validator(CreateProductReviewSchema),

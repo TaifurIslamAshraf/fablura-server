@@ -37,6 +37,7 @@ export interface IProduct extends Document {
   discountPrice?: string;
   stock: number;
   sold: number;
+  soldAt: Date;
   shipping: number;
   images: [string];
   numOfReviews: number;
