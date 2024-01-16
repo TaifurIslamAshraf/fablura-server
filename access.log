@@ -898,3 +898,4 @@
 ::1 - - [16/Jan/2024:14:08:52 +0000] "GET /api/v1/product/sold-product HTTP/1.1" 200 2527 "-" "node"
 ::1 - - [16/Jan/2024:14:08:52 +0000] "GET /api/v1/banner/get-all-banners?bannerType=topBanner HTTP/1.1" 201 189 "-" "node"
 ::1 - - [16/Jan/2024:14:08:52 +0000] "GET /api/v1/product/all-products HTTP/1.1" 200 2930 "-" "node"
+::1 - - [16/Jan/2024:14:59:54 +0000] "POST /api/v1/review/create-customer-review HTTP/1.1" 400 46 "-" "PostmanRuntime/7.36.1"
