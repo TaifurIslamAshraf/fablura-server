@@ -11,6 +11,7 @@ import morgan from "morgan";
 import { errorHandler, notFound } from "./src/lib/errorHandler";
 import bannerRoute from "./src/routes/banner.route";
 import { categoryRoute, subcategoryRoute } from "./src/routes/category.route";
+import customerReviewRoute from "./src/routes/customarReview.route";
 import orderRoute from "./src/routes/order.route";
 import productRoute from "./src/routes/product.route";
 import userRoute from "./src/routes/user.route";
@@ -49,6 +50,7 @@ app.use("/api/v1/subcategory", subcategoryRoute);
 app.use("/api/v1/banner", bannerRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
+app.use("/api/v1/review", customerReviewRoute);
 
 //test route
 app.get(
