@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.socialAuthSchema = exports.loginUserSchema = exports.activateUserSchema = exports.userSchemaValidator = void 0;
+exports.updateUserRoleSchema = exports.socialAuthSchema = exports.resetPasswordSchema = exports.updatePasswordSchema = exports.loginUserSchema = exports.activateUserSchema = exports.userSchemaValidator = void 0;
 const z = __importStar(require("zod"));
 exports.userSchemaValidator = z.object({
     body: z.object({
@@ -75,6 +75,25 @@ exports.loginUserSchema = z.object({
             .min(6, "Password should be at least 6 characters"),
     }),
 });
+exports.updatePasswordSchema = z.object({
+    body: z.object({
+        oldPassword: z
+            .string({ required_error: "Old Password is Required" })
+            .min(6, "Password should be at least 6 characters"),
+        newPassword: z
+            .string({ required_error: "New Password is Required" })
+            .min(6, "Password should be at least 6 characters"),
+    }),
+});
+exports.resetPasswordSchema = z.object({
+    body: z.object({
+        userId: z.string({ required_error: "userId is Required" }),
+        token: z.string({ required_error: "token is Required" }),
+        newPassword: z
+            .string({ required_error: "New Password is Required" })
+            .min(6, "Password should be at least 6 characters"),
+    }),
+});
 exports.socialAuthSchema = z.object({
     body: z.object({
         fullName: z.string({
@@ -88,6 +107,12 @@ exports.socialAuthSchema = z.object({
         avatar: z.string({
             required_error: "Avatar is required",
         }),
+    }),
+});
+exports.updateUserRoleSchema = z.object({
+    body: z.object({
+        userId: z.string({ required_error: "userId is Required" }),
+        role: z.enum(["admin", "user"]),
     }),
 });
 //# sourceMappingURL=user.schema.js.map

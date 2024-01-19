@@ -6,8 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const secret = {
+    serverUrl: process.env.SERVER_URL,
+    clientUrl: process.env.CLIENT_URL,
     PORT: process.env.PORT,
     dbUri: process.env.DB_URI,
+    forgotPasswordSecret: process.env.FORGOT_PASSWORD_SECRET,
     accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
     refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
     mailVarificationTokenSecret: process.env

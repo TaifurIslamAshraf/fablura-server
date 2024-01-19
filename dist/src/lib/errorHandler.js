@@ -35,10 +35,15 @@ const errorHandler = (err, req, res, next) => {
         statusCode = 400;
         message = "Your Token is Expired. Try Again";
     }
+    // //multer error
+    // if (err instanceof multer.MulterError) {
+    //   statusCode = 500;
+    //   message = "There was an upload error!";
+    // }
     res.status(statusCode).json({
         succss: false,
         message,
-        stack: process.env.NODE_ENV === "production" ? null : err.stack,
+        // stack: process.env.NODE_ENV === "production" ? null : err.stack,
     });
 };
 exports.errorHandler = errorHandler;

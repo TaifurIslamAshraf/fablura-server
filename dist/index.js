@@ -9,7 +9,7 @@ const secret_1 = __importDefault(require("./src/config/secret"));
 const startServer = () => {
     try {
         app_1.app.listen(secret_1.default.PORT, () => {
-            console.log(`Server is running at http://localhost:${8000}`);
+            console.log(`Server is running at http://localhost:${secret_1.default.PORT}`);
         });
     }
     catch (error) {

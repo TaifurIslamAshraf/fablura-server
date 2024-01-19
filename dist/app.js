@@ -13,6 +13,11 @@ const express_1 = __importDefault(require("express"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const morgan_1 = __importDefault(require("morgan"));
 const errorHandler_1 = require("./src/lib/errorHandler");
+const banner_route_1 = __importDefault(require("./src/routes/banner.route"));
+const category_route_1 = require("./src/routes/category.route");
+const customarReview_route_1 = __importDefault(require("./src/routes/customarReview.route"));
+const order_route_1 = __importDefault(require("./src/routes/order.route"));
+const product_route_1 = __importDefault(require("./src/routes/product.route"));
 const user_route_1 = __importDefault(require("./src/routes/user.route"));
 exports.app = (0, express_1.default)();
 //logger
@@ -35,6 +40,12 @@ exports.app.use((0, cors_1.default)({ origin: ["http://localhost:3000"], credent
 // console.log(require("crypto").randomBytes(32).toString("hex"));
 //all routes here
 exports.app.use("/api/v1/user", user_route_1.default);
+exports.app.use("/api/v1/category", category_route_1.categoryRoute);
+exports.app.use("/api/v1/subcategory", category_route_1.subcategoryRoute);
+exports.app.use("/api/v1/banner", banner_route_1.default);
+exports.app.use("/api/v1/product", product_route_1.default);
+exports.app.use("/api/v1/order", order_route_1.default);
+exports.app.use("/api/v1/review", customarReview_route_1.default);
 //test route
 exports.app.get("/", (0, express_async_handler_1.default)(async (req, res) => {
     res.status(200).json({

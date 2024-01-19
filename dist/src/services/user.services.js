@@ -3,11 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.activationUserService = exports.registerUserService = void 0;
+exports.forgotPasswordService = exports.activationUserService = exports.registerUserService = void 0;
 const ejs_1 = __importDefault(require("ejs"));
 const path_1 = __importDefault(require("path"));
+const secret_1 = __importDefault(require("../config/secret"));
 const activationToken_1 = require("../lib/activationToken");
 const errorHandler_1 = require("../lib/errorHandler");
+const genarateJwtToken_1 = require("../lib/genarateJwtToken");
 const sendMail_1 = require("../lib/sendMail");
 const user_model_1 = __importDefault(require("../models/user.model"));
 const registerUserService = async (activationMailData, res) => {
@@ -54,4 +56,23 @@ const activationUserService = async (newUser, res) => {
     return user;
 };
 exports.activationUserService = activationUserService;
+const forgotPasswordService = async (userId, email) => {
+    const serverUrl = secret_1.default.serverUrl;
+    const forgotPasswordToken = (0, genarateJwtToken_1.genarateJwtToken)({
+        payload: { _id: userId },
+        jwtSecret: secret_1.default.forgotPasswordSecret,
+        expireIn: "5m",
+    });
+    const forgotPasswordLink = `${serverUrl}/api/v1/user/forgot-password-link-validation/${userId}/${forgotPasswordToken}`;
+    await ejs_1.default.renderFile(path_1.default.join(__dirname, "/../views/forgotMail.ejs"), {
+        forgotPasswordLink,
+    });
+    await (0, sendMail_1.sendMails)({
+        email: email,
+        subject: "Reset Your MyShop password",
+        templete: "forgotMail.ejs",
+        data: { forgotPasswordLink },
+    });
+};
+exports.forgotPasswordService = forgotPasswordService;
 //# sourceMappingURL=user.services.js.map

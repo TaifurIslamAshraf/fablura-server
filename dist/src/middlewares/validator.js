@@ -13,9 +13,6 @@ const validator = (schema) => {
         }
         catch (error) {
             const errorMessage = error.errors.map((err) => ({
-                code: err.code,
-                expected: err.expected,
-                recevied: err.recevied,
                 path: err.path.join("."),
                 message: err.message,
             }));
