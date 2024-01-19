@@ -4,6 +4,7 @@ import { IPorductReviews } from "../../types/product";
 import { deleteMultipleImages } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
 import { slugify } from "../lib/slugify";
+import { SubCategoryModel } from "../models/category.model";
 import ProductModel from "../models/product.model";
 
 // create products -- admin
@@ -255,7 +256,7 @@ export const getSingleProduct = asyncHandler(async (req, res) => {
 // get all products
 export const getAllProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 8;
+  const limit = parseInt(req.query.limit as string) || 10;
   const search = req.query.search || "";
   const category = req.query.category || "";
   const subcategory = req.query.subcategory || "";
@@ -293,11 +294,17 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     errorMessage(res, 404, "No Product availble");
   }
   const productCount = await ProductModel.countDocuments(filter);
+  const categories = await ProductModel.distinct("category", filter);
+  const allSubcategory = await SubCategoryModel.find({
+    category: { $in: categories },
+  });
 
   res.status(200).json({
     success: true,
     message: "All products here",
     products,
+
+    allSubcategory,
     pagination: {
       numberOfProducts: productCount,
       totalPage: Math.ceil(productCount / limit),
