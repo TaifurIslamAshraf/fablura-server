@@ -38,11 +38,14 @@ export const createBanner = asyncHandler(async (req, res) => {
 });
 
 export const getAllBanners = asyncHandler(async (req, res) => {
-  const { bannerType } = req.query;
+  const { bannerType, category } = req.query;
 
   let query = {};
   if (bannerType) {
     query = { bannerType };
+  }
+  if (category) {
+    query = { category };
   }
 
   const banner = await BannerModel.find(query).populate("category");
