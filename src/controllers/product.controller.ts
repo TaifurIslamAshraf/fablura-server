@@ -55,6 +55,10 @@ export const createProduct = asyncHandler(async (req, res) => {
     req.files as Express.Multer.File[]
   ).map((file: Express.Multer.File) => file.path);
 
+  if (!imagesPath || imagesPath.length === 0) {
+    errorMessage(res, 400, "Products Images are required");
+  }
+
   if (req.files) {
     productData.images = imagesPath;
   }
@@ -281,7 +285,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   if (subcategory) {
     filter.subcategory = subcategory;
   }
-  filter.price = { $lte: maxPrice, $gte: minPrice };
+  filter.discountPrice = { $lte: maxPrice, $gte: minPrice };
   filter.ratings = { $gte: ratings };
 
   const products = await ProductModel.find(filter)
