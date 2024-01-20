@@ -8,6 +8,7 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const deleteImage_1 = require("../lib/deleteImage");
 const errorHandler_1 = require("../lib/errorHandler");
 const slugify_1 = require("../lib/slugify");
+const category_model_1 = require("../models/category.model");
 const product_model_1 = __importDefault(require("../models/product.model"));
 // create products -- admin
 exports.createProduct = (0, express_async_handler_1.default)(async (req, res) => {
@@ -26,6 +27,9 @@ exports.createProduct = (0, express_async_handler_1.default)(async (req, res) =>
     };
     productData.slug = (0, slugify_1.slugify)(name);
     const imagesPath = req.files.map((file) => file.path);
+    if (!imagesPath || imagesPath.length === 0) {
+        (0, errorHandler_1.errorMessage)(res, 400, "Products Images are required");
+    }
     if (req.files) {
         productData.images = imagesPath;
     }
@@ -172,7 +176,7 @@ exports.getSingleProduct = (0, express_async_handler_1.default)(async (req, res)
 // get all products
 exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 8;
+    const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || "";
     const category = req.query.category || "";
     const subcategory = req.query.subcategory || "";
@@ -193,7 +197,7 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     if (subcategory) {
         filter.subcategory = subcategory;
     }
-    filter.price = { $lte: maxPrice, $gte: minPrice };
+    filter.discountPrice = { $lte: maxPrice, $gte: minPrice };
     filter.ratings = { $gte: ratings };
     const products = await product_model_1.default.find(filter)
         .populate(["category", "subcategory"])
@@ -204,10 +208,15 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
         (0, errorHandler_1.errorMessage)(res, 404, "No Product availble");
     }
     const productCount = await product_model_1.default.countDocuments(filter);
+    const categories = await product_model_1.default.distinct("category", filter);
+    const allSubcategory = await category_model_1.SubCategoryModel.find({
+        category: { $in: categories },
+    });
     res.status(200).json({
         success: true,
         message: "All products here",
         products,
+        allSubcategory,
         pagination: {
             numberOfProducts: productCount,
             totalPage: Math.ceil(productCount / limit),

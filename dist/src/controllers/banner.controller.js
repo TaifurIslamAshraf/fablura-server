@@ -37,10 +37,13 @@ exports.createBanner = (0, express_async_handler_1.default)(async (req, res) => 
     });
 });
 exports.getAllBanners = (0, express_async_handler_1.default)(async (req, res) => {
-    const { bannerType } = req.query;
+    const { bannerType, category } = req.query;
     let query = {};
     if (bannerType) {
         query = { bannerType };
+    }
+    if (category) {
+        query = { category };
     }
     const banner = await banner_model_1.default.find(query).populate("category");
     if (!banner) {

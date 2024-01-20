@@ -269,7 +269,12 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     parseInt(req.query.maxPrice as string) || Number.MAX_SAFE_INTEGER;
   const ratings = parseFloat(req.query.ratings as string) || 0;
 
-  const searchRegExp = new RegExp(".*" + search + ".*", "i");
+  const searchWords = (search as string)
+    .split(/\s+/)
+    .map((word) => `(?=.*\\b${word}\\b)`)
+    .join("");
+  const searchRegExp = new RegExp(`^${searchWords}.*$`, "i");
+
   const filter: any =
     {
       // category: category,
@@ -285,7 +290,10 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   if (subcategory) {
     filter.subcategory = subcategory;
   }
-  filter.discountPrice = { $lte: maxPrice, $gte: minPrice };
+  filter.$and = [
+    { discountPrice: { $exists: true } },
+    { discountPrice: { $gte: minPrice, $lte: maxPrice } },
+  ];
   filter.ratings = { $gte: ratings };
 
   const products = await ProductModel.find(filter)
