@@ -318,3 +318,4 @@
 ::1 - - [20/Jan/2024:01:19:28 +0000] "GET /public/uploads/banners/1705713511154-1000x340.png HTTP/1.1" 200 17895 "-" "node"
 ::1 - - [20/Jan/2024:01:26:20 +0000] "POST /api/v1/product/create-product HTTP/1.1" 201 1062 "-" "PostmanRuntime/7.36.1"
 ::1 - - [20/Jan/2024:01:30:41 +0000] "POST /api/v1/product/create-product HTTP/1.1" 201 1062 "-" "PostmanRuntime/7.36.1"
+::1 - - [20/Jan/2024:01:35:58 +0000] "POST /api/v1/product/create-product HTTP/1.1" 400 57 "-" "PostmanRuntime/7.36.1"
