@@ -496,3 +496,38 @@ export const getProductReviews = asyncHandler(async (req, res) => {
     productReviews,
   });
 });
+
+//get cart product
+export const cartProducts = asyncHandler(async (req, res) => {
+  const productId = req.cookies.product_cart;
+
+  const productIdsArray = JSON.parse(productId);
+
+  console.log("productId:", productIdsArray);
+
+  if (!productIdsArray && productIdsArray.length === 0) {
+    errorMessage(res, 404, "Cart item not found");
+  }
+
+  const products = await ProductModel.find({ _id: { $in: productIdsArray } });
+
+  if (!products || products.length === 0) {
+    errorMessage(res, 404, "Products not found");
+  }
+
+  const formattedProducts = products.map((product) => ({
+    _id: product._id,
+    name: product.name,
+    price: product.price,
+    images:
+      product.images && product.images.length > 0 ? product.images[0] : null,
+    discountPrice: product.discountPrice,
+    slug: product.slug,
+  }));
+
+  res.status(200).json({
+    success: true,
+    message: "All cart items here",
+    products: formattedProducts,
+  });
+});

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  cartProducts,
   createProduct,
   createReviews,
   deleteProduct,
@@ -72,5 +73,6 @@ productRoute.delete(
   deleteReview
 );
 productRoute.get("/all-reviews", getProductReviews);
+productRoute.get("/cart-products", cartProducts);
 
 export default productRoute;
