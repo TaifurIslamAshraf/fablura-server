@@ -503,8 +503,6 @@ export const cartProducts = asyncHandler(async (req, res) => {
 
   const productIdsArray = JSON.parse(productId);
 
-  console.log("productId:", productIdsArray);
-
   if (!productIdsArray && productIdsArray.length === 0) {
     errorMessage(res, 404, "Cart item not found");
   }

@@ -22,5 +22,6 @@ productRoute.put("/create-review", (0, validator_1.validator)(product_schema_1.C
 productRoute.put("/update-review-status", (0, validator_1.validator)(product_schema_1.UpdateProductReviewSchema), authGard_1.isAuthenticated, (0, authGard_1.authorizeUser)("admin"), product_controller_1.updateReviewStatus);
 productRoute.delete("/delete-review/:productId/:reviewId", authGard_1.isAuthenticated, (0, authGard_1.authorizeUser)("admin"), product_controller_1.deleteReview);
 productRoute.get("/all-reviews", product_controller_1.getProductReviews);
+productRoute.get("/cart-products", product_controller_1.cartProducts);
 exports.default = productRoute;
 //# sourceMappingURL=product.route.js.map

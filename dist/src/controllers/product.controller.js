@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductReviews = exports.deleteReview = exports.updateReviewStatus = exports.createReviews = exports.getResentSoldProducts = exports.getAllProducts = exports.getSingleProduct = exports.deleteProduct = exports.updateProduct = exports.createProduct = void 0;
+exports.cartProducts = exports.getProductReviews = exports.deleteReview = exports.updateReviewStatus = exports.createReviews = exports.getResentSoldProducts = exports.getAllProducts = exports.getSingleProduct = exports.deleteProduct = exports.updateProduct = exports.createProduct = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const deleteImage_1 = require("../lib/deleteImage");
 const errorHandler_1 = require("../lib/errorHandler");
@@ -183,7 +183,11 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     const minPrice = parseInt(req.query.minPrice) || 0;
     const maxPrice = parseInt(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
     const ratings = parseFloat(req.query.ratings) || 0;
-    const searchRegExp = new RegExp(".*" + search + ".*", "i");
+    const searchWords = search
+        .split(/\s+/)
+        .map((word) => `(?=.*\\b${word}\\b)`)
+        .join("");
+    const searchRegExp = new RegExp(`^${searchWords}.*$`, "i");
     const filter = {
         // category: category,
         // subcategory: subcategory,
@@ -197,7 +201,10 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     if (subcategory) {
         filter.subcategory = subcategory;
     }
-    filter.discountPrice = { $lte: maxPrice, $gte: minPrice };
+    filter.$and = [
+        { discountPrice: { $exists: true } },
+        { discountPrice: { $gte: minPrice, $lte: maxPrice } },
+    ];
     filter.ratings = { $gte: ratings };
     const products = await product_model_1.default.find(filter)
         .populate(["category", "subcategory"])
@@ -360,6 +367,31 @@ exports.getProductReviews = (0, express_async_handler_1.default)(async (req, res
         success: true,
         message: "all product reviews",
         productReviews,
+    });
+});
+//get cart product
+exports.cartProducts = (0, express_async_handler_1.default)(async (req, res) => {
+    const productId = req.cookies.product_cart;
+    const productIdsArray = JSON.parse(productId);
+    if (!productIdsArray && productIdsArray.length === 0) {
+        (0, errorHandler_1.errorMessage)(res, 404, "Cart item not found");
+    }
+    const products = await product_model_1.default.find({ _id: { $in: productIdsArray } });
+    if (!products || products.length === 0) {
+        (0, errorHandler_1.errorMessage)(res, 404, "Products not found");
+    }
+    const formattedProducts = products.map((product) => ({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        images: product.images && product.images.length > 0 ? product.images[0] : null,
+        discountPrice: product.discountPrice,
+        slug: product.slug,
+    }));
+    res.status(200).json({
+        success: true,
+        message: "All cart items here",
+        products: formattedProducts,
     });
 });
 //# sourceMappingURL=product.controller.js.map
