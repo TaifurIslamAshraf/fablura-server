@@ -10,6 +10,7 @@ import morgan from "morgan";
 
 import { errorHandler, notFound } from "./src/lib/errorHandler";
 import bannerRoute from "./src/routes/banner.route";
+import cartRoute from "./src/routes/cart.route";
 import { categoryRoute, subcategoryRoute } from "./src/routes/category.route";
 import customerReviewRoute from "./src/routes/customarReview.route";
 import orderRoute from "./src/routes/order.route";
@@ -51,6 +52,7 @@ app.use("/api/v1/banner", bannerRoute);
 app.use("/api/v1/product", productRoute);
 app.use("/api/v1/order", orderRoute);
 app.use("/api/v1/review", customerReviewRoute);
+app.use("/api/v1/cart", cartRoute);
 
 //test route
 app.get(
