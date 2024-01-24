@@ -12,17 +12,17 @@ const cartItemSchema = new mongoose.Schema({
     default: 1,
     min: 1,
   },
+  price: {
+    type: Number,
+    required: true,
+  },
+  discountPrice: {
+    type: Number,
+    required: true,
+  },
   selected: {
     type: Boolean,
     default: true,
-  },
-  totalMainPrice: {
-    type: Number,
-    required: true,
-  },
-  totalDiscountPrice: {
-    type: Number,
-    required: true,
   },
 });
 
@@ -33,16 +33,15 @@ const cartSchema = new mongoose.Schema(
       required: true,
     },
     cartItem: [cartItemSchema],
-    totalPrice: {
-      price: {
-        type: Number,
-        required: true,
-      },
-      discountPrice: {
-        type: Number,
-        required: true,
-      },
+    totalMainPrice: {
+      type: Number,
+      default: 0,
     },
+    totalDiscountPrice: {
+      type: Number,
+      default: 0,
+    },
+
     selectAll: {
       type: Boolean,
       default: true,
