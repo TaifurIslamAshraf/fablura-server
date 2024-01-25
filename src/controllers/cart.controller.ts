@@ -86,101 +86,65 @@ export const getCartItem = asyncHandler(async (req, res) => {
       $match: { sessionId: sessionId },
     },
     {
+      $unwind: "$cartItem", // Flatten the cartItem array
+    },
+    {
       $lookup: {
         from: "products",
         localField: "cartItem.productId",
         foreignField: "_id",
-        as: "products",
+        as: "product",
       },
     },
     {
       $project: {
-        _id: 1,
-        sessionId: 1,
-        totalMainPrice: 1,
-        totalDiscountPrice: 1,
-        selectAll: 1,
         "cartItem.productId": 1,
         "cartItem.quantity": 1,
         "cartItem.selected": 1,
         "cartItem.price": 1,
         "cartItem.discountPrice": 1,
         "cartItem.product": {
-          name: { $arrayElemAt: ["$products.name", 0] },
+          name: { $arrayElemAt: ["$product.name", 0] },
           image: {
-            $arrayElemAt: [{ $arrayElemAt: ["$products.images", 0] }, 0],
+            $arrayElemAt: [{ $arrayElemAt: ["$product.images", 0] }, 0],
           },
-          shipping: { $arrayElemAt: ["$products.shipping", 0] },
-          slug: { $arrayElemAt: ["$products.slug", 0] },
+          shipping: { $arrayElemAt: ["$product.shipping", 0] },
+          slug: { $arrayElemAt: ["$product.slug", 0] },
         },
+        selectAll: "$selectAll",
       },
     },
     {
-      $unset: "products",
-    },
-    {
-      $match: { "cartItem.selected": true },
-    },
-    {
       $group: {
-        _id: null,
-        totalMainPrice: { $sum: "$cartItem.price" },
-        totalDiscountPrice: { $sum: "$cartItem.discountPrice" },
-        cart: { $push: "$$ROOT" }, // Store the selected cart items in an array
+        _id: "$_id",
+        sessionId: { $first: "$sessionId" },
+        cartItem: { $push: "$cartItem" },
+        totalMainPrice: { $first: "$totalMainPrice" },
+        totalDiscountPrice: { $first: "$totalDiscountPrice" },
+        selectAll: { $max: "$selectAll" },
       },
     },
   ]);
 
-  // Extract the results from the aggregation pipeline
-  const [aggregatedResult] = cart;
-
-  // If there are selected items, update the totals in the cart document
-  if (aggregatedResult) {
-    const {
-      totalMainPrice,
-      totalDiscountPrice,
-      cart: selectedCartItems,
-    } = aggregatedResult;
-
-    // Update total prices in the cart document
-    await CartModel.updateOne(
-      { sessionId: sessionId },
-      {
-        $set: {
-          totalMainPrice: totalMainPrice,
-          totalDiscountPrice: totalDiscountPrice,
-        },
-      }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "cart products",
-      cart: selectedCartItems,
-    });
-  } else {
-    // Handle the case where there are no selected items
-    res.status(200).json({
-      success: true,
-      message: "No selected cart products",
-      cart: [],
-    });
-  }
+  res.status(200).json({
+    success: true,
+    message: "cart products",
+    cartItem: cart[0].cartItem,
+    selectAll: cart.length > 0 ? cart[0].selectAll : null,
+  });
 });
 
 export const syncCart = asyncHandler(async (req, res) => {
-  //select, selectAll, increment quantity, descriment quantity
   const { isSelect, productId, isSelectAll, cartQuantity } = req.query;
-
-  //find session cart
   const sessionId = req.cookies.cart_session;
+
   if (!sessionId) {
     errorMessage(res, 400, "Invalid Cart Product");
     return;
   }
 
-  //toggle product selection
-  if (isSelect && productId) {
+  if (isSelect !== undefined && productId) {
+    // Toggle product selection
     const updatedCartItem = await CartModel.findOneAndUpdate(
       {
         sessionId,
@@ -190,19 +154,37 @@ export const syncCart = asyncHandler(async (req, res) => {
         $set: {
           "cartItem.$.selected": isSelect === "false" ? false : true,
         },
-      }
+      },
+      { new: true }
     );
 
     if (!updatedCartItem) {
       errorMessage(res, 404, "cart product not found");
+      return;
     }
+
+    // Check if all items are selected
+    const allItemsSelected = updatedCartItem.cartItem.every(
+      (item) => item.selected
+    );
+
+    // Update selectAll based on the condition for the specific productId
+    await CartModel.findOneAndUpdate(
+      {
+        sessionId,
+      },
+      {
+        selectAll: allItemsSelected,
+      },
+      { new: true }
+    );
   }
 
-  //toggle product select All
   if (isSelectAll !== undefined) {
+    // Toggle select all
     const isSelectedAll = isSelectAll === "false" ? false : true;
 
-    const updatedCartItem = await CartModel.findOneAndUpdate(
+    await CartModel.findOneAndUpdate(
       {
         sessionId,
       },
@@ -212,15 +194,11 @@ export const syncCart = asyncHandler(async (req, res) => {
       },
       { new: true }
     );
-
-    if (!updatedCartItem) {
-      errorMessage(res, 404, "cart product not found");
-    }
   }
 
-  //increment product quantity
   if (cartQuantity && productId) {
-    const updatedCartItem = await CartModel.findOneAndUpdate(
+    // Update product quantity
+    await CartModel.findOneAndUpdate(
       {
         sessionId,
         "cartItem.productId": productId,
@@ -230,14 +208,48 @@ export const syncCart = asyncHandler(async (req, res) => {
       },
       { new: true }
     );
-
-    if (!updatedCartItem) {
-      errorMessage(res, 404, "Product not exist");
-    }
   }
 
   res.status(200).json({
     success: true,
     message: "cart product was sync",
+  });
+});
+
+export const calculatePrice = asyncHandler(async (req, res) => {
+  // find session cart
+  const sessionId = req.cookies.cart_session;
+  if (!sessionId) {
+    errorMessage(res, 400, "Invalid Cart Product");
+  }
+  const cart = await CartModel.findOne({ sessionId });
+
+  if (!cart) {
+    errorMessage(res, 400, "Cart not found");
+    return;
+  }
+
+  const selectedProduct = cart.cartItem.filter(
+    (item) => item.selected === true
+  );
+
+  const totalMainPrice = selectedProduct.reduce(
+    (aqu, curr) => aqu + curr.price * curr.quantity,
+    0
+  );
+  const totalDiscountPrice = selectedProduct.reduce(
+    (aqu, curr) => aqu + curr.discountPrice * curr.quantity,
+    0
+  );
+
+  cart.totalMainPrice = totalMainPrice;
+  cart.totalDiscountPrice = totalDiscountPrice;
+
+  await cart.save();
+
+  res.status(200).json({
+    success: true,
+    totalMainPrice,
+    totalDiscountPrice,
   });
 });
