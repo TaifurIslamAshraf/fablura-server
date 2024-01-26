@@ -135,7 +135,8 @@ export const getCartItem = asyncHandler(async (req, res) => {
 });
 
 export const syncCart = asyncHandler(async (req, res) => {
-  const { isSelect, productId, isSelectAll, cartQuantity } = req.query;
+  const { isSelect, productId, isSelectAll, cartQuantity, deleteCartItem } =
+    req.query;
   const sessionId = req.cookies.cart_session;
 
   if (!sessionId) {
@@ -210,6 +211,33 @@ export const syncCart = asyncHandler(async (req, res) => {
     );
   }
 
+  if (deleteCartItem !== undefined && productId) {
+    // Delete specific item from the cart
+   const updatedCartItem =  await CartModel.findOneAndUpdate(
+      { sessionId },
+      {
+        $pull: {
+          cartItem: { productId },
+        },
+
+      },
+      { new: true }
+    );
+
+    const allItemsSelected = updatedCartItem?.cartItem.every((item)=> item.selected)
+
+    await CartModel.findOneAndUpdate(
+      {sessionId},
+      {
+        selectAll: allItemsSelected
+      },
+      {
+        new: true
+      }
+    )
+
+  }
+
   res.status(200).json({
     success: true,
     message: "cart product was sync",
@@ -253,3 +281,5 @@ export const calculatePrice = asyncHandler(async (req, res) => {
     totalDiscountPrice,
   });
 });
+
+export const deleteCartItem = asyncHandler(async (req, res) => {});

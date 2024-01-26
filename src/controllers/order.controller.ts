@@ -13,11 +13,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     paymentType,
     itemsPrice,
     shippingPrice,
-    productName,
-    price,
-    quentity,
-    image,
-    product,
+    orderItems,
     totalAmount,
     user,
   } = req.body;
@@ -28,13 +24,7 @@ export const createOrder = asyncHandler(async (req, res) => {
       fullName,
       address,
     },
-    orderItems: {
-      productName,
-      price,
-      quentity,
-      image,
-      product,
-    },
+    orderItems: [...orderItems],
 
     orderNots,
     paymentType,
@@ -49,14 +39,14 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   //set order cookie if user not login
   if (!user) {
-    res.cookie(`orders-${order.orderId}`, JSON.stringify(order), {
+    res.cookie(`orders-${order.orderId}`, JSON.stringify(order.orderId), {
       maxAge: 365 * 24 * 60 * 60 * 1000,
     });
   }
 
   res.status(201).json({
     success: true,
-    message: "Order created successfull",
+    message: "Order Placed successfull",
     order,
   });
 });
@@ -157,7 +147,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
 //get all orders
 export const getAllOrders = asyncHandler(async (req, res) => {
-  const orders = await OrderModel.find().sort({ createdAt: -1 });
+  const orders = await OrderModel.find().sort({ createdAt: -1 }).limit(100);
   if (!orders) {
     errorMessage(res, 404, "Orders not found");
   }
