@@ -1,4 +1,6 @@
 import asyncHandler from "express-async-handler";
+import corn from "node-cron";
+
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import CartModel from "../models/cart.model";
@@ -59,7 +61,7 @@ export const addCartItem = asyncHandler(async (req, res) => {
 
     // set cookie session
     const expiarationDate = new Date();
-    expiarationDate.setMonth(expiarationDate.getMonth() + 1);
+    expiarationDate.setMonth(expiarationDate.getMonth() + 2);
 
     res.cookie("cart_session", sessionId, {
       httpOnly: true,
@@ -213,29 +215,29 @@ export const syncCart = asyncHandler(async (req, res) => {
 
   if (deleteCartItem !== undefined && productId) {
     // Delete specific item from the cart
-   const updatedCartItem =  await CartModel.findOneAndUpdate(
+    const updatedCartItem = await CartModel.findOneAndUpdate(
       { sessionId },
       {
         $pull: {
           cartItem: { productId },
         },
-
       },
       { new: true }
     );
 
-    const allItemsSelected = updatedCartItem?.cartItem.every((item)=> item.selected)
+    const allItemsSelected = updatedCartItem?.cartItem.every(
+      (item) => item.selected
+    );
 
     await CartModel.findOneAndUpdate(
-      {sessionId},
+      { sessionId },
       {
-        selectAll: allItemsSelected
+        selectAll: allItemsSelected,
       },
       {
-        new: true
+        new: true,
       }
-    )
-
+    );
   }
 
   res.status(200).json({
@@ -282,4 +284,17 @@ export const calculatePrice = asyncHandler(async (req, res) => {
   });
 });
 
-export const deleteCartItem = asyncHandler(async (req, res) => {});
+//delete cart tow month ago cart
+corn.schedule("0 0 0 * * *", async () => {
+  try {
+    const twoMothAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+
+    await CartModel.deleteMany({
+      createdAt: { $lt: twoMothAgo },
+    });
+
+    console.log("Delete expire cart");
+  } catch (error: any) {
+    console.log(error.message);
+  }
+});

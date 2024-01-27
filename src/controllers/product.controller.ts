@@ -22,7 +22,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
     ingredients,
     foodDesc,
-    color,
+    colors,
     brand,
     warrantyPeriod,
     countryOrigin,
@@ -82,7 +82,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     productData = {
       ...productData,
       description: {
-        color,
+        colors,
         brand,
         warrantyPeriod,
         countryOrigin,
@@ -246,14 +246,26 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 export const getSingleProduct = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
-  const product = await ProductModel.findOne({ slug }).populate("category");
+  const product = await ProductModel.findOne({ slug }).populate(
+    "category subcategory"
+  );
   if (!product) {
     errorMessage(res, 404, "Product not found !");
   }
 
+  //find related products
+  const relatedProduct = await ProductModel.find(
+    {
+      subcategory: product?.subcategory,
+      _id: { $ne: product?._id },
+    },
+    { name: 1, ratings: 1, numOfReviews: 1, price: 1, discountPrice: 1 }
+  ).limit(6);
+
   res.status(200).json({
     success: true,
     product,
+    relatedProduct,
   });
 });
 

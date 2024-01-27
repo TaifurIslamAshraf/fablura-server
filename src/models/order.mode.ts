@@ -27,7 +27,7 @@ export const orderSchema = new Schema(
           type: Number,
           required: [true, "Product price is required"],
         },
-        quentity: {
+        quantity: {
           type: Number,
           required: [true, "Product quentity is required"],
         },
@@ -48,7 +48,7 @@ export const orderSchema = new Schema(
     },
 
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String,
       ref: "User",
     },
 

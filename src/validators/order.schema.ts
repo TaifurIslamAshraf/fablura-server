@@ -13,18 +13,19 @@ export const createOrderSchema = z.object({
     paymentType: z.string({ required_error: "payment type is required" }),
     itemsPrice: z.number({ required_error: "items price is required" }),
     shippingPrice: z.number({ required_error: "shipping price is required" }),
-    productName: z.string({ required_error: "product name  is required" }),
-    price: z.number({ required_error: "price is required" }),
-    quentity: z.number({ required_error: "quentity is required" }),
-    image: z.string({ required_error: "image is required" }),
-    product: z.string({ required_error: "image is required" }),
-    totalAmount: z.string({ required_error: "total amount is required" }),
+    orderItems: z.array(
+      z.object({
+        productName: z.string({ required_error: "product name  is required" }),
+        price: z.number({ required_error: "price is required" }),
+        quantity: z.number({ required_error: "quantity is required" }),
+        image: z.string({ required_error: "image is required" }),
+        product: z.string({ required_error: "product is required" }),
+      })
+    ),
+    totalAmount: z.number({ required_error: "total amount is required" }),
     user: z
       .string()
-      .refine(
-        (value) => mongoose.Types.ObjectId.isValid(value),
-        "Invalid mongoose id"
-      )
+
       .optional(),
   }),
 });

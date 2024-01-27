@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
+import CartModel from "../models/cart.model";
 import OrderModel from "../models/order.mode";
 import { updateProductStockSold } from "../services/order.services";
 
@@ -24,7 +25,7 @@ export const createOrder = asyncHandler(async (req, res) => {
       fullName,
       address,
     },
-    orderItems: [...orderItems],
+    orderItems,
 
     orderNots,
     paymentType,
@@ -43,6 +44,20 @@ export const createOrder = asyncHandler(async (req, res) => {
       maxAge: 365 * 24 * 60 * 60 * 1000,
     });
   }
+
+  const sessionId = req.cookies.cart_session;
+
+  const productItemIds = orderItems?.map((item: any) => item.product);
+
+  await CartModel.findOneAndUpdate(
+    { sessionId },
+    {
+      $pull: {
+        cartItem: { productId: { $in: productItemIds } },
+      },
+    },
+    { new: true }
+  );
 
   res.status(201).json({
     success: true,
@@ -125,7 +140,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   if (orderStatus === "Delivered" && order) {
     //update stock and sold
     order.orderItems.map(async (value) => {
-      await updateProductStockSold(value.product.toString(), value.quentity);
+      await updateProductStockSold(value.product.toString(), value.quantity);
     });
 
     //update deliveredAt

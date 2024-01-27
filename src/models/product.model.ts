@@ -141,7 +141,7 @@ const productSchema: Schema<IProduct> = new Schema(
     subcategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "SubCategory",
-      // required: [true, "subCategory id is required"],
+      required: [true, "subCategory id is required"],
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,
