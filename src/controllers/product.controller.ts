@@ -259,7 +259,15 @@ export const getSingleProduct = asyncHandler(async (req, res) => {
       subcategory: product?.subcategory,
       _id: { $ne: product?._id },
     },
-    { name: 1, ratings: 1, numOfReviews: 1, price: 1, discountPrice: 1 }
+    {
+      name: 1,
+      ratings: 1,
+      numOfReviews: 1,
+      price: 1,
+      discountPrice: 1,
+      images: 1,
+      slug: 1,
+    }
   ).limit(6);
 
   res.status(200).json({
