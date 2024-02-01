@@ -16,6 +16,9 @@ const productReviews: Schema<IPorductReviews> = new mongoose.Schema({
     type: String,
     required: [true, "Review user name is required"],
   },
+  avatar: {
+    type: String,
+  },
   rating: {
     type: Number,
     required: [true, "Review rating is required"],

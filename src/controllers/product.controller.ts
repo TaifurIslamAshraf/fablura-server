@@ -6,6 +6,7 @@ import { errorMessage } from "../lib/errorHandler";
 import { slugify } from "../lib/slugify";
 import { SubCategoryModel } from "../models/category.model";
 import ProductModel from "../models/product.model";
+import UserModel from "../models/user.model";
 
 // create products -- admin
 export const createProduct = asyncHandler(async (req, res) => {
@@ -246,9 +247,9 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 export const getSingleProduct = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
-  const product = await ProductModel.findOne({ slug }).populate(
-    "category subcategory"
-  );
+  const product = await ProductModel.findOne({ slug })
+    .populate("category subcategory")
+    .select("-reviews");
   if (!product) {
     errorMessage(res, 404, "Product not found !");
   }
@@ -317,6 +318,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   filter.ratings = { $gte: ratings };
 
   const products = await ProductModel.find(filter)
+    .select("-reviews")
     .populate(["category", "subcategory"])
     .skip((page - 1) * limit)
     .limit(limit)
@@ -366,9 +368,14 @@ export const createReviews = asyncHandler(async (req, res) => {
   const { rating, comment, productId } = req.body;
   const user = res.locals.user;
 
+  if (!user) {
+    errorMessage(res, 404, "User Not found");
+  }
+
   const review: IPorductReviews = {
     user: user._id,
     fullName: user.fullName,
+    avatar: user?.avatar,
     rating,
     comment,
   };
@@ -481,39 +488,26 @@ export const deleteReview = asyncHandler(async (req, res) => {
 
 //get product reviews
 export const getProductReviews = asyncHandler(async (req, res) => {
-  const { userId, productId } = req.body;
+  const { userId, productId } = req.query;
 
   const product = await ProductModel.findById(productId);
   if (!product) {
     errorMessage(res, 404, "Products not found");
   }
 
+  const userLength = await UserModel.countDocuments();
+
   let reviews: any = product?.reviews || [];
 
-  let productReviews: any = [];
-
-  //check if user give a reviews
-  if (userId && reviews.length > 0) {
-    reviews.forEach((rev: IPorductReviews) => {
-      if (rev.user.toString() === userId) {
-        productReviews.push(rev);
-      }
-    });
-  }
-
-  //check if review is approved
-  if (reviews.length > 0) {
-    reviews.forEach((rev: IPorductReviews) => {
-      if (rev.approved) {
-        productReviews.push(rev);
-      }
-    });
-  }
+  let productReviews = reviews?.filter((item: any) => {
+    return (userId && item?.user?.toString() === userId) || item.approved;
+  });
 
   res.status(200).json({
     success: true,
     message: "all product reviews",
     productReviews,
+    userLength,
   });
 });
 

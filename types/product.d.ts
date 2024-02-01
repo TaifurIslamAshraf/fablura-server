@@ -3,6 +3,7 @@ import mongoose, { Document } from "mongoose";
 export interface IPorductReviews {
   user: mongoose.Schema.Types.ObjectId;
   fullName: string;
+  avatar: string;
   rating: number;
   comment: string;
   approved?: boolean;

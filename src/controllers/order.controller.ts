@@ -93,7 +93,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
   let userOrders;
 
   if (userId) {
-    userOrders = await OrderModel.find({ user: userId });
+    userOrders = await OrderModel.find({ user: userId }).limit(15);
   } else {
     //get order id from cookie
     const cookies = req.cookies;
@@ -103,7 +103,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 
     const orderPromises = ordersId.map(async (value) => {
       const orderId = value.split("-")[1];
-      return OrderModel.findOne({ orderId });
+      return OrderModel.findOne({ orderId }).limit(15);
     });
 
     const cookiesOrder = await Promise.all(orderPromises);
