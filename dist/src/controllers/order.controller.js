@@ -7,23 +7,18 @@ exports.deleteOrders = exports.getAllOrders = exports.updateOrderStatus = export
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const errorHandler_1 = require("../lib/errorHandler");
 const generateId_1 = require("../lib/generateId");
+const cart_model_1 = __importDefault(require("../models/cart.model"));
 const order_mode_1 = __importDefault(require("../models/order.mode"));
 const order_services_1 = require("../services/order.services");
 exports.createOrder = (0, express_async_handler_1.default)(async (req, res) => {
-    const { phone, fullName, address, orderNots, paymentType, itemsPrice, shippingPrice, productName, price, quentity, image, product, totalAmount, user, } = req.body;
+    const { phone, fullName, address, orderNots, paymentType, itemsPrice, shippingPrice, orderItems, totalAmount, user, } = req.body;
     const orderData = {
         shippingInfo: {
             phone,
             fullName,
             address,
         },
-        orderItems: {
-            productName,
-            price,
-            quentity,
-            image,
-            product,
-        },
+        orderItems,
         orderNots,
         paymentType,
         itemsPrice,
@@ -35,13 +30,20 @@ exports.createOrder = (0, express_async_handler_1.default)(async (req, res) => {
     const order = await order_mode_1.default.create(orderData);
     //set order cookie if user not login
     if (!user) {
-        res.cookie(`orders-${order.orderId}`, JSON.stringify(order), {
+        res.cookie(`orders-${order.orderId}`, JSON.stringify(order.orderId), {
             maxAge: 365 * 24 * 60 * 60 * 1000,
         });
     }
+    const sessionId = req.cookies.cart_session;
+    const productItemIds = orderItems?.map((item) => item.product);
+    await cart_model_1.default.findOneAndUpdate({ sessionId }, {
+        $pull: {
+            cartItem: { productId: { $in: productItemIds } },
+        },
+    }, { new: true });
     res.status(201).json({
         success: true,
-        message: "Order created successfull",
+        message: "Order Placed successfull",
         order,
     });
 });
@@ -63,7 +65,7 @@ exports.getUserOrders = (0, express_async_handler_1.default)(async (req, res) =>
     const { userId } = req.query;
     let userOrders;
     if (userId) {
-        userOrders = await order_mode_1.default.find({ user: userId });
+        userOrders = await order_mode_1.default.find({ user: userId }).limit(15);
     }
     else {
         //get order id from cookie
@@ -73,7 +75,7 @@ exports.getUserOrders = (0, express_async_handler_1.default)(async (req, res) =>
         });
         const orderPromises = ordersId.map(async (value) => {
             const orderId = value.split("-")[1];
-            return order_mode_1.default.findOne({ orderId });
+            return order_mode_1.default.findOne({ orderId }).limit(15);
         });
         const cookiesOrder = await Promise.all(orderPromises);
         userOrders = cookiesOrder.filter(Boolean);
@@ -103,7 +105,7 @@ exports.updateOrderStatus = (0, express_async_handler_1.default)(async (req, res
     if (orderStatus === "Delivered" && order) {
         //update stock and sold
         order.orderItems.map(async (value) => {
-            await (0, order_services_1.updateProductStockSold)(value.product.toString(), value.quentity);
+            await (0, order_services_1.updateProductStockSold)(value.product.toString(), value.quantity);
         });
         //update deliveredAt
         if (!order.deliveredAt) {
@@ -122,7 +124,7 @@ exports.updateOrderStatus = (0, express_async_handler_1.default)(async (req, res
 });
 //get all orders
 exports.getAllOrders = (0, express_async_handler_1.default)(async (req, res) => {
-    const orders = await order_mode_1.default.find().sort({ createdAt: -1 });
+    const orders = await order_mode_1.default.find().sort({ createdAt: -1 }).limit(100);
     if (!orders) {
         (0, errorHandler_1.errorMessage)(res, 404, "Orders not found");
     }

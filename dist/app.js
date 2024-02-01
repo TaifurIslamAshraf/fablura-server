@@ -14,6 +14,7 @@ const express_async_handler_1 = __importDefault(require("express-async-handler")
 const morgan_1 = __importDefault(require("morgan"));
 const errorHandler_1 = require("./src/lib/errorHandler");
 const banner_route_1 = __importDefault(require("./src/routes/banner.route"));
+const cart_route_1 = __importDefault(require("./src/routes/cart.route"));
 const category_route_1 = require("./src/routes/category.route");
 const customarReview_route_1 = __importDefault(require("./src/routes/customarReview.route"));
 const order_route_1 = __importDefault(require("./src/routes/order.route"));
@@ -46,6 +47,7 @@ exports.app.use("/api/v1/banner", banner_route_1.default);
 exports.app.use("/api/v1/product", product_route_1.default);
 exports.app.use("/api/v1/order", order_route_1.default);
 exports.app.use("/api/v1/review", customarReview_route_1.default);
+exports.app.use("/api/v1/cart", cart_route_1.default);
 //test route
 exports.app.get("/", (0, express_async_handler_1.default)(async (req, res) => {
     res.status(200).json({

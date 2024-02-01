@@ -50,7 +50,7 @@ exports.orderSchema = new mongoose_1.Schema({
                 type: Number,
                 required: [true, "Product price is required"],
             },
-            quentity: {
+            quantity: {
                 type: Number,
                 required: [true, "Product quentity is required"],
             },
@@ -69,7 +69,7 @@ exports.orderSchema = new mongoose_1.Schema({
         type: String,
     },
     user: {
-        type: mongoose_1.default.Schema.Types.ObjectId,
+        type: String,
         ref: "User",
     },
     orderStatus: {

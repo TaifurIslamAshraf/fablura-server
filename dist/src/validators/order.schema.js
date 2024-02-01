@@ -17,15 +17,16 @@ exports.createOrderSchema = zod_1.z.object({
         paymentType: zod_1.z.string({ required_error: "payment type is required" }),
         itemsPrice: zod_1.z.number({ required_error: "items price is required" }),
         shippingPrice: zod_1.z.number({ required_error: "shipping price is required" }),
-        productName: zod_1.z.string({ required_error: "product name  is required" }),
-        price: zod_1.z.number({ required_error: "price is required" }),
-        quentity: zod_1.z.number({ required_error: "quentity is required" }),
-        image: zod_1.z.string({ required_error: "image is required" }),
-        product: zod_1.z.string({ required_error: "image is required" }),
-        totalAmount: zod_1.z.string({ required_error: "total amount is required" }),
+        orderItems: zod_1.z.array(zod_1.z.object({
+            productName: zod_1.z.string({ required_error: "product name  is required" }),
+            price: zod_1.z.number({ required_error: "price is required" }),
+            quantity: zod_1.z.number({ required_error: "quantity is required" }),
+            image: zod_1.z.string({ required_error: "image is required" }),
+            product: zod_1.z.string({ required_error: "product is required" }),
+        })),
+        totalAmount: zod_1.z.number({ required_error: "total amount is required" }),
         user: zod_1.z
             .string()
-            .refine((value) => mongoose_1.default.Types.ObjectId.isValid(value), "Invalid mongoose id")
             .optional(),
     }),
 });

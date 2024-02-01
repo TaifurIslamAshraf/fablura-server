@@ -34,6 +34,9 @@ const productReviews = new mongoose_1.default.Schema({
         type: String,
         required: [true, "Review user name is required"],
     },
+    avatar: {
+        type: String,
+    },
     rating: {
         type: Number,
         required: [true, "Review rating is required"],
@@ -152,7 +155,7 @@ const productSchema = new mongoose_1.Schema({
     subcategory: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "SubCategory",
-        // required: [true, "subCategory id is required"],
+        required: [true, "subCategory id is required"],
     },
     category: {
         type: mongoose_1.default.Schema.Types.ObjectId,

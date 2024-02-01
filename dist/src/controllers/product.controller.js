@@ -10,9 +10,10 @@ const errorHandler_1 = require("../lib/errorHandler");
 const slugify_1 = require("../lib/slugify");
 const category_model_1 = require("../models/category.model");
 const product_model_1 = __importDefault(require("../models/product.model"));
+const user_model_1 = __importDefault(require("../models/user.model"));
 // create products -- admin
 exports.createProduct = (0, express_async_handler_1.default)(async (req, res) => {
-    const { name, descriptionType, price, discountPrice, stock, sold, shipping, category, subcategory, ingredients, foodDesc, color, brand, warrantyPeriod, countryOrigin, batteryCapacity, features, dimensions, model, waterproof, powerSupply, bodyMaterials, chargingTime, } = req.body;
+    const { name, descriptionType, price, discountPrice, stock, sold, shipping, category, subcategory, ingredients, foodDesc, colors, brand, warrantyPeriod, countryOrigin, batteryCapacity, features, dimensions, model, waterproof, powerSupply, bodyMaterials, chargingTime, } = req.body;
     let productData = {
         name,
         descriptionType,
@@ -52,7 +53,7 @@ exports.createProduct = (0, express_async_handler_1.default)(async (req, res) =>
         productData = {
             ...productData,
             description: {
-                color,
+                colors,
                 brand,
                 warrantyPeriod,
                 countryOrigin,
@@ -164,13 +165,29 @@ exports.deleteProduct = (0, express_async_handler_1.default)(async (req, res) =>
 //get single product
 exports.getSingleProduct = (0, express_async_handler_1.default)(async (req, res) => {
     const { slug } = req.params;
-    const product = await product_model_1.default.findOne({ slug }).populate("category");
+    const product = await product_model_1.default.findOne({ slug })
+        .populate("category subcategory")
+        .select("-reviews");
     if (!product) {
         (0, errorHandler_1.errorMessage)(res, 404, "Product not found !");
     }
+    //find related products
+    const relatedProduct = await product_model_1.default.find({
+        subcategory: product?.subcategory,
+        _id: { $ne: product?._id },
+    }, {
+        name: 1,
+        ratings: 1,
+        numOfReviews: 1,
+        price: 1,
+        discountPrice: 1,
+        images: 1,
+        slug: 1,
+    }).limit(6);
     res.status(200).json({
         success: true,
         product,
+        relatedProduct,
     });
 });
 // get all products
@@ -207,6 +224,7 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     ];
     filter.ratings = { $gte: ratings };
     const products = await product_model_1.default.find(filter)
+        .select("-reviews")
         .populate(["category", "subcategory"])
         .skip((page - 1) * limit)
         .limit(limit)
@@ -249,9 +267,13 @@ exports.getResentSoldProducts = (0, express_async_handler_1.default)(async (req,
 exports.createReviews = (0, express_async_handler_1.default)(async (req, res) => {
     const { rating, comment, productId } = req.body;
     const user = res.locals.user;
+    if (!user) {
+        (0, errorHandler_1.errorMessage)(res, 404, "User Not found");
+    }
     const review = {
         user: user._id,
         fullName: user.fullName,
+        avatar: user?.avatar,
         rating,
         comment,
     };
@@ -340,33 +362,21 @@ exports.deleteReview = (0, express_async_handler_1.default)(async (req, res) => 
 });
 //get product reviews
 exports.getProductReviews = (0, express_async_handler_1.default)(async (req, res) => {
-    const { userId, productId } = req.body;
+    const { userId, productId } = req.query;
     const product = await product_model_1.default.findById(productId);
     if (!product) {
         (0, errorHandler_1.errorMessage)(res, 404, "Products not found");
     }
+    const userLength = await user_model_1.default.countDocuments();
     let reviews = product?.reviews || [];
-    let productReviews = [];
-    //check if user give a reviews
-    if (userId && reviews.length > 0) {
-        reviews.forEach((rev) => {
-            if (rev.user.toString() === userId) {
-                productReviews.push(rev);
-            }
-        });
-    }
-    //check if review is approved
-    if (reviews.length > 0) {
-        reviews.forEach((rev) => {
-            if (rev.approved) {
-                productReviews.push(rev);
-            }
-        });
-    }
+    let productReviews = reviews?.filter((item) => {
+        return (userId && item?.user?.toString() === userId) || item.approved;
+    });
     res.status(200).json({
         success: true,
         message: "all product reviews",
         productReviews,
+        userLength,
     });
 });
 //get cart product
