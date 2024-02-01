@@ -486,6 +486,51 @@ export const deleteReview = asyncHandler(async (req, res) => {
   });
 });
 
+//get all reviews -- admin
+export const getAllProductsReviews = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 15;
+
+  const productsReviews = await ProductModel.aggregate([
+    {
+      $unwind: "$reviews",
+    },
+    {
+      $match: {
+        "reviews.approved": false,
+      },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        productName: { $first: "$name" },
+        productId: { $first: "$_id" },
+        reviews: { $push: "$reviews" },
+      },
+    },
+    {
+      $skip: (page - 1) * limit,
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+  const countProduct = await ProductModel.countDocuments();
+
+  res.status(200).json({
+    success: true,
+    message: "All product reviews",
+    productsReviews,
+    pagination: {
+      totalPage: Math.ceil(countProduct / limit),
+      currentPage: page,
+      nextPage: page + 1,
+      prevPage: page - 1,
+    },
+  });
+});
+
 //get product reviews
 export const getProductReviews = asyncHandler(async (req, res) => {
   const { userId, productId } = req.query;

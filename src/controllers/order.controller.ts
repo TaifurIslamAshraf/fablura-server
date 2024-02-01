@@ -162,21 +162,76 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
 //get all orders
 export const getAllOrders = asyncHandler(async (req, res) => {
-  const orders = await OrderModel.find().sort({ createdAt: -1 }).limit(100);
-  if (!orders) {
-    errorMessage(res, 404, "Orders not found");
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+  const orderStatus = req.query.orderStatus || "";
+
+  const filter: any = {};
+
+  if (orderStatus) {
+    filter.orderStatus = orderStatus;
   }
 
-  let totalOrdersAmount = 0;
+  const orders = await OrderModel.find(filter)
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+
+  if (!orders || orders.length === 0) {
+    errorMessage(res, 404, "Orders not found");
+    return;
+  }
+
+  const countOrders = await OrderModel.countDocuments(filter);
+  const totalPage = Math.ceil(countOrders / limit);
+
+  let totalOrders = {
+    totalAmount: 0,
+    numOfOrders: orders?.length,
+  };
+  let totalPandingOrder = {
+    totalAmount: 0,
+    numOfOrders: 0,
+  };
+  let totalDeliveredOrder = {
+    totalAmount: 0,
+    numOfOrders: 0,
+  };
+  let totalCancelledOrder = {
+    totalAmount: 0,
+    numOfOrders: 0,
+  };
 
   orders.forEach((value) => {
-    totalOrdersAmount += value.totalAmount;
+    totalOrders.totalAmount += value.totalAmount;
+    if (value?.orderStatus === "Pending") {
+      totalPandingOrder.numOfOrders += 1;
+      totalPandingOrder.totalAmount += value?.totalAmount;
+    } else if (value?.orderStatus === "Delivered") {
+      totalDeliveredOrder.numOfOrders += 1;
+      totalDeliveredOrder.totalAmount += value?.totalAmount;
+    } else if (value?.orderStatus === "Cancelled") {
+      totalCancelledOrder.numOfOrders += 1;
+      totalCancelledOrder.totalAmount += value?.totalAmount;
+    }
   });
 
   res.status(200).json({
     success: true,
     message: "Your all order here",
-    totalOrdersAmount,
+    orderSummery: {
+      totalOrders,
+      totalPandingOrder,
+      totalDeliveredOrder,
+      totalCancelledOrder,
+    },
+    pagination: {
+      numOfOrders: orders?.length,
+      totalPage: totalPage,
+      currentPage: page,
+      nextPage: page < totalPage ? page + 1 : null,
+      prevPage: page > 1 ? page - 1 : null,
+    },
     orders,
   });
 });

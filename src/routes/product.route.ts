@@ -6,6 +6,7 @@ import {
   deleteProduct,
   deleteReview,
   getAllProducts,
+  getAllProductsReviews,
   getProductReviews,
   getResentSoldProducts,
   getSingleProduct,
@@ -71,6 +72,12 @@ productRoute.delete(
   isAuthenticated,
   authorizeUser("admin"),
   deleteReview
+);
+productRoute.get(
+  "/all-product-reviews",
+  isAuthenticated,
+  authorizeUser("admin"),
+  getAllProductsReviews
 );
 productRoute.get("/all-reviews", getProductReviews);
 productRoute.get("/cart-products", cartProducts);
