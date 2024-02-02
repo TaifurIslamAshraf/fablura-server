@@ -3,6 +3,7 @@ import {
   createOrder,
   deleteOrders,
   getAllOrders,
+  getSealesReport,
   getSignleOrder,
   getUserOrders,
   updateOrderStatus,
@@ -39,6 +40,12 @@ orderRoute.delete(
   isAuthenticated,
   authorizeUser("admin"),
   deleteOrders
+);
+orderRoute.get(
+  "/monthly-sales",
+  isAuthenticated,
+  authorizeUser("admin"),
+  getSealesReport
 );
 
 export default orderRoute;

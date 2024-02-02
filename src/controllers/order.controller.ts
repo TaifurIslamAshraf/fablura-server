@@ -252,3 +252,44 @@ export const deleteOrders = asyncHandler(async (req, res) => {
     message: "Order deleted successfully",
   });
 });
+
+// get seales report
+export const getSealesReport = asyncHandler(async (req, res) => {
+  const currentDate = new Date();
+  const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+  const endOfYear = new Date(currentDate.getFullYear() + 1, 0, 1);
+
+  const yearlySales = await OrderModel.aggregate([
+    {
+      $match: {
+        deliveredAt: { $gte: startOfYear, $lt: endOfYear },
+        orderStatus: "Delivered",
+      },
+    },
+    {
+      $group: {
+        _id: { month: { $month: "$deliveredAt" } },
+        totalAmount: { $sum: "$totalAmount" },
+      },
+    },
+  ]);
+
+  const monthSales = Array.from({ length: 12 }, (_, monthIndex) => {
+    const totalMonth = yearlySales?.find(
+      (item) => item?._id?.month === monthIndex + 1
+    );
+
+    return {
+      name: new Date(currentDate.getFullYear(), monthIndex, 1).toLocaleString(
+        "en-us",
+        { month: "long" }
+      ),
+      total: totalMonth ? totalMonth.totalAmount : 0,
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    monthSales,
+  });
+});
