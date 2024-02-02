@@ -293,3 +293,46 @@ export const getSealesReport = asyncHandler(async (req, res) => {
     monthSales,
   });
 });
+
+export const getOrderStatus = asyncHandler(async (req, res) => {
+  const currentDate = new Date();
+  const startMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() - 1,
+    1
+  );
+  const endMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth(),
+    0
+  );
+
+  // {
+  //   createdAt: { $gte: startMonth, $lt: endMonth },
+  // }
+
+  const orders = await OrderModel.find();
+
+  let totalPandingOrder = 0;
+  let totalDeliveredOrder = 0;
+  let totalCancelledOrder = 0;
+
+  orders.forEach((value) => {
+    if (value?.orderStatus === "Pending") {
+      totalPandingOrder += 1;
+    } else if (value?.orderStatus === "Delivered") {
+      totalDeliveredOrder += 1;
+    } else if (value?.orderStatus === "Cancelled") {
+      totalCancelledOrder += 1;
+    }
+  });
+
+  res.status(200).json({
+    success: true,
+    orderSummary: {
+      totalPandingOrder,
+      totalDeliveredOrder,
+      totalCancelledOrder,
+    },
+  });
+});
