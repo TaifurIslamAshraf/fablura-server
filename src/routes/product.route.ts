@@ -10,6 +10,7 @@ import {
   getProductReviews,
   getResentSoldProducts,
   getSingleProduct,
+  getStockStatus,
   updateProduct,
   updateReviewStatus,
 } from "../controllers/product.controller";
@@ -81,5 +82,6 @@ productRoute.get(
 );
 productRoute.get("/all-reviews", getProductReviews);
 productRoute.get("/cart-products", cartProducts);
+productRoute.get("/stock-status", getStockStatus);
 
 export default productRoute;

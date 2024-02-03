@@ -588,3 +588,19 @@ export const cartProducts = asyncHandler(async (req, res) => {
     products: formattedProducts,
   });
 });
+
+//chart
+export const getStockStatus = asyncHandler(async (req, res) => {
+  const productStockAvailable = await ProductModel.countDocuments({
+    stock: { $gt: 0 },
+  });
+  const productStockOut = await ProductModel.countDocuments({
+    stock: { $lte: 0 },
+  });
+
+  res.status(200).json({
+    success: true,
+    productStockAvailable,
+    productStockOut,
+  });
+});
