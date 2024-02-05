@@ -32,12 +32,12 @@ export const ProductSchema = z.object({
     descriptionType: z.enum(["electronics", "foods"], {
       required_error: "Product descriptionType is required",
     }),
-    price: z.number({ required_error: "Product price is required" }),
+    price: z.string({ required_error: "Product price is required" }),
     discountPrice: z.string().optional(),
-    stock: z.number({ required_error: "Product stock is required" }),
-    sold: z.number().optional(),
+    stock: z.string({ required_error: "Product stock is required" }),
+    sold: z.string().optional(),
     soldAt: z.date().optional(),
-    shipping: z.number({ required_error: "Product shipping is required" }),
+    shipping: z.string({ required_error: "Product shipping is required" }),
     subcategory: z.string({ required_error: "subcategory required" }),
     category: z.string({ required_error: "product category is required" }),
     // description: z

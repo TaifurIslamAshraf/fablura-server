@@ -40,15 +40,17 @@ export const createProduct = asyncHandler(async (req, res) => {
   let productData: any = {
     name,
     descriptionType,
-    price,
+    price: parseInt(price),
     discountPrice,
-    stock,
-    sold,
-    shipping,
+    stock: parseInt(stock),
+
+    shipping: parseInt(shipping),
     category,
     subcategory,
     reviews: [],
   };
+
+  console.log(productData);
 
   productData.slug = slugify(name);
 
@@ -59,6 +61,8 @@ export const createProduct = asyncHandler(async (req, res) => {
   if (!imagesPath || imagesPath.length === 0) {
     errorMessage(res, 400, "Products Images are required");
   }
+
+  console.log(req.files);
 
   if (req.files) {
     productData.images = imagesPath;
