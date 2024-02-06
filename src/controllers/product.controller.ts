@@ -16,7 +16,6 @@ export const createProduct = asyncHandler(async (req, res) => {
     price,
     discountPrice,
     stock,
-    sold,
     shipping,
     category,
     subcategory,
@@ -50,8 +49,6 @@ export const createProduct = asyncHandler(async (req, res) => {
     reviews: [],
   };
 
-  console.log(productData);
-
   productData.slug = slugify(name);
 
   const imagesPath: string[] | undefined = (
@@ -61,8 +58,6 @@ export const createProduct = asyncHandler(async (req, res) => {
   if (!imagesPath || imagesPath.length === 0) {
     errorMessage(res, 400, "Products Images are required");
   }
-
-  console.log(req.files);
 
   if (req.files) {
     productData.images = imagesPath;
@@ -168,7 +163,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 
   const productWithSameName = await ProductModel.findOne({ name });
-  if (productWithSameName) {
+  if (productWithSameName && productWithSameName?._id.toString() !== id) {
     deleteMultipleImages(imagesPath);
     errorMessage(res, 400, "Product name should be unique");
   }
