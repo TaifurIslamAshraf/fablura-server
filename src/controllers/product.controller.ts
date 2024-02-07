@@ -4,6 +4,7 @@ import { IPorductReviews } from "../../types/product";
 import { deleteMultipleImages } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
 import { slugify } from "../lib/slugify";
+import CartModel from "../models/cart.model";
 import { SubCategoryModel } from "../models/category.model";
 import ProductModel from "../models/product.model";
 import UserModel from "../models/user.model";
@@ -213,6 +214,23 @@ export const updateProduct = asyncHandler(async (req, res) => {
   if (updatedProduct && existingProduct?.images && imagesPath.length > 0) {
     deleteMultipleImages(existingProduct.images);
   }
+
+  //price sync with cart price
+  const cartToUpdate = await CartModel.find({
+    "cartItem.productId": id,
+  });
+
+  await Promise.all(
+    cartToUpdate.map(async (cart) => {
+      cart.cartItem.forEach((item) => {
+        if (item.productId.toString() === id) {
+          (item.price = price), (item.discountPrice = discountPrice);
+        }
+      });
+
+      await cart.save();
+    })
+  );
 
   res.status(200).json({
     success: true,

@@ -82,6 +82,11 @@ productRoute.get(
 );
 productRoute.get("/all-reviews", getProductReviews);
 productRoute.get("/cart-products", cartProducts);
-productRoute.get("/stock-status", getStockStatus);
+productRoute.get(
+  "/stock-status",
+  isAuthenticated,
+  authorizeUser("admin"),
+  getStockStatus
+);
 
 export default productRoute;

@@ -93,7 +93,9 @@ export const getUserOrders = asyncHandler(async (req, res) => {
   let userOrders;
 
   if (userId) {
-    userOrders = await OrderModel.find({ user: userId }).limit(15);
+    userOrders = await OrderModel.find({ user: userId })
+      .limit(15)
+      .sort({ createdAt: -1 });
   } else {
     //get order id from cookie
     const cookies = req.cookies;
@@ -103,7 +105,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 
     const orderPromises = ordersId.map(async (value) => {
       const orderId = value.split("-")[1];
-      return OrderModel.findOne({ orderId }).limit(15);
+      return OrderModel.findOne({ orderId }).limit(15).sort({ createdAt: -1 });
     });
 
     const cookiesOrder = await Promise.all(orderPromises);
@@ -298,20 +300,18 @@ export const getOrderStatus = asyncHandler(async (req, res) => {
   const currentDate = new Date();
   const startMonth = new Date(
     currentDate.getFullYear(),
-    currentDate.getMonth() - 1,
+    currentDate.getMonth(),
     1
   );
   const endMonth = new Date(
     currentDate.getFullYear(),
-    currentDate.getMonth(),
+    currentDate.getMonth() + 1,
     0
   );
 
-  // {
-  //   createdAt: { $gte: startMonth, $lt: endMonth },
-  // }
-
-  const orders = await OrderModel.find();
+  const orders = await OrderModel.find({
+    createdAt: { $gte: startMonth, $lt: endMonth },
+  });
 
   let totalPandingOrder = 0;
   let totalDeliveredOrder = 0;
