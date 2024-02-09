@@ -69,7 +69,7 @@ productRoute.put(
   updateReviewStatus
 );
 productRoute.delete(
-  "/delete-review/:productId/:reviewId",
+  "/delete-review",
   isAuthenticated,
   authorizeUser("admin"),
   deleteReview

@@ -165,7 +165,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 //get all orders
 export const getAllOrders = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 20;
+  const limit = parseInt(req.query.limit as string) || 15;
   const orderStatus = req.query.orderStatus || "";
 
   const filter: any = {};
@@ -228,7 +228,7 @@ export const getAllOrders = asyncHandler(async (req, res) => {
       totalCancelledOrder,
     },
     pagination: {
-      numOfOrders: orders?.length,
+      numOfOrders: countOrders,
       totalPage: totalPage,
       currentPage: page,
       nextPage: page < totalPage ? page + 1 : null,
@@ -316,6 +316,8 @@ export const getOrderStatus = asyncHandler(async (req, res) => {
   let totalPandingOrder = 0;
   let totalDeliveredOrder = 0;
   let totalCancelledOrder = 0;
+  let totalProcessingOrder = 0;
+  let totalShippedOrder = 0;
 
   orders.forEach((value) => {
     if (value?.orderStatus === "Pending") {
@@ -324,6 +326,10 @@ export const getOrderStatus = asyncHandler(async (req, res) => {
       totalDeliveredOrder += 1;
     } else if (value?.orderStatus === "Cancelled") {
       totalCancelledOrder += 1;
+    } else if (value?.orderStatus === "Processing") {
+      totalProcessingOrder += 1;
+    } else if (value?.orderStatus === "Shipped") {
+      totalShippedOrder += 1;
     }
   });
 
@@ -333,6 +339,8 @@ export const getOrderStatus = asyncHandler(async (req, res) => {
       totalPandingOrder,
       totalDeliveredOrder,
       totalCancelledOrder,
+      totalShippedOrder,
+      totalProcessingOrder,
     },
   });
 });

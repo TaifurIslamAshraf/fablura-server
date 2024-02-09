@@ -427,7 +427,7 @@ export const createReviews = asyncHandler(async (req, res) => {
     product.ratings = avg / product.reviews.length;
   }
 
-  await product?.save({ validateBeforeSave: true });
+  await product?.save();
 
   res.status(200).json({
     success: true,
@@ -467,7 +467,7 @@ export const updateReviewStatus = asyncHandler(async (req, res) => {
 
 //delete review --admin
 export const deleteReview = asyncHandler(async (req, res) => {
-  const { reviewId, productId } = req.params;
+  const { reviewId, productId } = req.body;
 
   const product = await ProductModel.findById(productId);
   if (!product) {
@@ -476,7 +476,7 @@ export const deleteReview = asyncHandler(async (req, res) => {
 
   if (product?.reviews) {
     const productIndex = product?.reviews?.findIndex(
-      (value: any) => value._id.toString() === reviewId.toString()
+      (value: any) => value._id.toString() === reviewId
     );
     if (productIndex === -1) {
       errorMessage(res, 404, "review not found");
@@ -484,17 +484,20 @@ export const deleteReview = asyncHandler(async (req, res) => {
     product?.reviews?.splice(productIndex, 1);
   }
 
-  let avg = 0;
-  product?.reviews?.forEach((value) => {
-    avg += value.rating;
-  });
+  let avgRating = 0;
+  if (product?.reviews?.length! > 0 && product?.reviews) {
+    avgRating =
+      product.reviews.reduce((total, review) => total + review.rating, 0) /
+      product.reviews.length;
 
-  if (product?.reviews) {
-    product.ratings = avg / product.reviews.length;
+    product.ratings = avgRating;
     product.numOfReviews = product.reviews.length;
+  } else if (product?.reviews?.length === 0) {
+    product.ratings = 0;
+    product.numOfReviews = 0;
   }
 
-  await product?.save({ validateBeforeSave: true });
+  await product?.save();
 
   res.status(200).json({
     success: true,
