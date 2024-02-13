@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import { deleteImage } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
 import BannerModel from "../models/banner.model";
+import { SubCategoryModel } from "../models/category.model";
 
 export const createBanner = asyncHandler(async (req, res) => {
   const { bannerType, category } = req.body;
@@ -45,7 +46,8 @@ export const getAllBanners = asyncHandler(async (req, res) => {
     query = { bannerType };
   }
   if (category) {
-    query = { category };
+    const subcategory = await SubCategoryModel.findById(category);
+    query = { category: subcategory?.category };
   }
 
   const banner = await BannerModel.find(query).populate("category");

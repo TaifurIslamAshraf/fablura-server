@@ -84,11 +84,9 @@ const foodsSchema: Schema<IFoodsDescription> =
   new mongoose.Schema<IFoodsDescription>({
     ingredients: {
       type: String,
-      required: [true, "Product ingredients required"],
     },
     foodDesc: {
       type: String,
-      required: [true, "Product descriptions required"],
     },
   });
 
