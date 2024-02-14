@@ -310,37 +310,45 @@ export const getOrderStatus = asyncHandler(async (req, res) => {
   );
 
   const orders = await OrderModel.find({
-    createdAt: { $gte: startMonth, $lt: endMonth },
+    createdAt: { $gte: startMonth, $lte: endMonth },
   });
 
-  let totalPandingOrder = 0;
-  let totalDeliveredOrder = 0;
-  let totalCancelledOrder = 0;
-  let totalProcessingOrder = 0;
-  let totalShippedOrder = 0;
+  if (!orders) {
+    errorMessage(res, 404, "Orders not found");
+  }
 
-  orders.forEach((value) => {
-    if (value?.orderStatus === "Pending") {
-      totalPandingOrder += 1;
-    } else if (value?.orderStatus === "Delivered") {
-      totalDeliveredOrder += 1;
-    } else if (value?.orderStatus === "Cancelled") {
-      totalCancelledOrder += 1;
-    } else if (value?.orderStatus === "Processing") {
-      totalProcessingOrder += 1;
-    } else if (value?.orderStatus === "Shipped") {
-      totalShippedOrder += 1;
+  const orderSummary = {
+    totalPandingOrder: 0,
+    totalDeliveredOrder: 0,
+    totalCancelledOrder: 0,
+    totalShippedOrder: 0,
+    totalProcessingOrder: 0,
+  };
+
+  orders.forEach((order) => {
+    switch (order.orderStatus) {
+      case "Pending":
+        orderSummary.totalPandingOrder++;
+        break;
+      case "Delivered":
+        orderSummary.totalDeliveredOrder++;
+        break;
+      case "Cancelled":
+        orderSummary.totalCancelledOrder++;
+        break;
+      case "Processing":
+        orderSummary.totalProcessingOrder++;
+        break;
+      case "Shipped":
+        orderSummary.totalShippedOrder++;
+        break;
+      default:
+        break;
     }
   });
 
   res.status(200).json({
     success: true,
-    orderSummary: {
-      totalPandingOrder,
-      totalDeliveredOrder,
-      totalCancelledOrder,
-      totalShippedOrder,
-      totalProcessingOrder,
-    },
+    orderSummary,
   });
 });
