@@ -23,10 +23,7 @@ export const createOrderSchema = z.object({
       })
     ),
     totalAmount: z.number({ required_error: "total amount is required" }),
-    user: z
-      .string()
-
-      .optional(),
+    user: z.string().optional(),
   }),
 });
 

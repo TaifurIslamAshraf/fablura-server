@@ -48,6 +48,18 @@ const userSchema: Schema<IUser> = new Schema(
       type: String,
       // required: [true, "Phone number is required"],
     },
+    reviewsInfo: [
+      {
+        reviewsCounter: {
+          type: Number,
+          default: 0,
+        },
+        productId: {
+          type: String,
+          default: "",
+        },
+      },
+    ],
     role: {
       type: String,
       enum: ["admin", "user"],

@@ -9,6 +9,10 @@ export interface IUser extends Document {
   role: "admin" | "user";
   address: string;
   phone: string;
+  reviewsInfo?: {
+    productId: String;
+    reviewsCounter?: Number;
+  }[];
   comparePassword: (entredPassword) => Promise<boolean>;
   accessToken: () => string;
   refreshToken: () => string;

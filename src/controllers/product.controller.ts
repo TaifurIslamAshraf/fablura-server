@@ -403,12 +403,19 @@ export const createReviews = asyncHandler(async (req, res) => {
   }
 
   if (product?.reviews) {
-    const isReviewd = product?.reviews.some(
-      (rev) => rev.user.toString() === user._id.toString()
+    const reviewValidity = product?.reviews.filter(
+      (value) => value.user.toString() === user?._id.toString()
     );
 
-    if (isReviewd) {
-      errorMessage(res, 400, "You alredy give a review");
+    const reviewCount = user?.reviewsInfo?.find(
+      (item: any) => item?.productId === productId
+    );
+
+    console.log(reviewCount?.reviewsCounter);
+    console.log(reviewValidity?.length);
+
+    if (reviewValidity.length >= reviewCount?.reviewsCounter) {
+      errorMessage(res, 400, "You have to buy this item");
     }
   }
 

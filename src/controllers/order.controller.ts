@@ -3,7 +3,10 @@ import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import CartModel from "../models/cart.model";
 import OrderModel from "../models/order.mode";
-import { updateProductStockSold } from "../services/order.services";
+import {
+  updateProductStockSold,
+  updateReviewInfo,
+} from "../services/order.services";
 
 export const createOrder = asyncHandler(async (req, res) => {
   const {
@@ -32,7 +35,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     itemsPrice,
     shippingPrice,
     totalAmount,
-    user,
+    user: user,
     orderId: generateId(),
   };
 
@@ -126,6 +129,7 @@ export const getUserOrders = asyncHandler(async (req, res) => {
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { orderStatus } = req.body;
+  const userId = res.locals.user?._id;
 
   const order = await OrderModel.findById(id);
   if (!order) {
@@ -143,6 +147,11 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
     //update stock and sold
     order.orderItems.map(async (value) => {
       await updateProductStockSold(value.product.toString(), value.quantity);
+    });
+
+    //update user review counter
+    order.orderItems?.forEach(async (value) => {
+      await updateReviewInfo(value?.product.toString(), userId.toString());
     });
 
     //update deliveredAt
