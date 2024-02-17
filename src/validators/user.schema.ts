@@ -24,6 +24,10 @@ export const userSchemaValidator = z.object({
     phone: z.string({
       required_error: "Phone number is required",
     }),
+    // reviewsInfo: z.object({
+    //   reviewsCounter: z.number().optional(),
+    //   productId: z.string().optional(),
+    // }),
     role: z.enum(["admin", "user"]).optional(),
   }),
 });

@@ -64,7 +64,7 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: "Order Placed successfull",
+    message: "Order Plased successfull",
     order,
   });
 });
@@ -151,7 +151,10 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
     //update user review counter
     order.orderItems?.forEach(async (value) => {
-      await updateReviewInfo(value?.product.toString(), userId.toString());
+      await updateReviewInfo(
+        value?.product.toString(),
+        order?.user?.toString()!
+      );
     });
 
     //update deliveredAt

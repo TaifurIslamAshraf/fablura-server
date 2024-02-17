@@ -25,6 +25,7 @@ export const updateReviewInfo = async (productId: string, userId: string) => {
   const isReviewdBefore = user?.reviewsInfo?.find(
     (value) => value.productId === productId
   );
+
   if (isReviewdBefore && isReviewdBefore.reviewsCounter) {
     isReviewdBefore.reviewsCounter =
       (isReviewdBefore.reviewsCounter as number) + 1;

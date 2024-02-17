@@ -411,8 +411,9 @@ export const createReviews = asyncHandler(async (req, res) => {
       (item: any) => item?.productId === productId
     );
 
-    console.log(reviewCount?.reviewsCounter);
-    console.log(reviewValidity?.length);
+    if (reviewCount?.reviewsCounter === undefined) {
+      errorMessage(res, 400, "You have to buy this item");
+    }
 
     if (reviewValidity.length >= reviewCount?.reviewsCounter) {
       errorMessage(res, 400, "You have to buy this item");
