@@ -368,7 +368,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 });
 
 export const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await UserModel.find();
+  const users = await UserModel.find().sort({ role: 1 });
   const userLength = await UserModel.countDocuments();
   if (!users) {
     errorMessage(res, 404, "Users not found");
