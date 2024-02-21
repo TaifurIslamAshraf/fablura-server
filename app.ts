@@ -40,7 +40,15 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
 //cors setup
-app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://abdullah-ecommerce-server.onrender.com",
+    ],
+    credentials: true,
+  })
+);
 
 // console.log(require("crypto").randomBytes(32).toString("hex"));
 
