@@ -44,7 +44,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://abdullah-ecommerce-server.onrender.com",
+      "https://my-shop-client-tawny.vercel.app",
     ],
     credentials: true,
   })
