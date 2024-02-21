@@ -37,10 +37,10 @@ export const sendToken = (user: any, statusCode: number, res: Response) => {
   const refreshToken = user.refreshToken();
 
   //in production mode secure true in cookie options for refresh token
-  // if (process.env.NODE_ENV === "production") {
-  //   refreshTokenCookieOptions.secure = true;
-  //   accessTokenCookieOptions.secure = true;
-  // }
+  if (process.env.NODE_ENV === "production") {
+    refreshTokenCookieOptions.secure = true;
+    accessTokenCookieOptions.secure = true;
+  }
 
   res.cookie("access_token", accessToken, accessTokenCookieOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenCookieOptions);
