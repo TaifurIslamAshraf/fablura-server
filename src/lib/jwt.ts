@@ -22,25 +22,21 @@ export const accessTokenCookieOptions: ICookieOption = {
   expires: new Date(Date.now() + accessTokenExpire * 60 * 1000),
   maxAge: accessTokenExpire * 60 * 1000,
   httpOnly: true,
-  sameSite: "lax",
+  sameSite: "none",
+  secure: true,
 };
 
 export const refreshTokenCookieOptions: ICookieOption = {
   expires: new Date(Date.now() + refreshTokenExpire * 24 * 60 * 60 * 1000),
   maxAge: refreshTokenExpire * 24 * 60 * 60 * 1000,
   httpOnly: true,
-  sameSite: "lax",
+  sameSite: "none",
+  secure: true,
 };
 
 export const sendToken = (user: any, statusCode: number, res: Response) => {
   const accessToken = user.accessToken();
   const refreshToken = user.refreshToken();
-
-  //in production mode secure true in cookie options for refresh token
-  if (process.env.NODE_ENV === "production") {
-    refreshTokenCookieOptions.secure = true;
-    accessTokenCookieOptions.secure = true;
-  }
 
   res.cookie("access_token", accessToken, accessTokenCookieOptions);
   res.cookie("refresh_token", refreshToken, refreshTokenCookieOptions);
