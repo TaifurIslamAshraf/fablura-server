@@ -45,6 +45,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://my-shop-client-tawny.vercel.app",
+      "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
     ],
     credentials: true,
   })
