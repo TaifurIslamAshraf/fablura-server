@@ -7,11 +7,7 @@ import secret from "../config/secret";
 import { deleteImage } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
 import { genarateJwtToken } from "../lib/genarateJwtToken";
-import {
-  accessTokenCookieOptions,
-  refreshTokenCookieOptions,
-  sendToken,
-} from "../lib/jwt";
+import { sendToken } from "../lib/jwt";
 import { verifyJwtToken } from "../lib/verifyToken";
 import UserModel from "../models/user.model";
 import {
@@ -118,7 +114,7 @@ export const logout = asyncHandler(
 //update access token
 export const updateAccessToken = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const refresh_token = req.cookies.refresh_token as string;
+    const refresh_token = req.body.refresh_token as string;
 
     if (!refresh_token) {
       errorMessage(res, 400, "Please login to access this recourse");
@@ -140,6 +136,8 @@ export const updateAccessToken = asyncHandler(
       errorMessage(res, 400, "Please login to access this recourse");
     }
 
+    const accessTokenExpire = parseInt(secret.accessTokenExpire || "1", 10);
+
     const accessToken = genarateJwtToken({
       payload: { _id: userId },
       jwtSecret: secret.accessTokenSecret,
@@ -151,13 +149,17 @@ export const updateAccessToken = asyncHandler(
       expireIn: "30d",
     });
 
+    const expireTime = accessTokenExpire * 60 * 1000;
+
     res.locals.user = user;
-    res.cookie("access_token", accessToken, accessTokenCookieOptions);
-    res.cookie("refresh_token", refreshToken, refreshTokenCookieOptions);
+    // res.cookie("access_token", accessToken, accessTokenCookieOptions);
+    // res.cookie("refresh_token", refreshToken, refreshTokenCookieOptions);
 
     res.status(200).json({
       success: true,
       accessToken,
+      refreshToken,
+      expireIn: new Date().setTime(new Date().getTime() + expireTime),
     });
   }
 );
