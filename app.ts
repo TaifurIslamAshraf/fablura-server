@@ -39,14 +39,18 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 //cookie-parser
 app.use(cookieParser());
 
+//alowed origin
+// const origin = [
+//   "http://localhost:3000",
+//   "https://my-shop-client-tawny.vercel.app",
+//   "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
+// ]
+const origin = "*";
+// http://144.126.157.233:3000/
 //cors setup
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://my-shop-client-tawny.vercel.app",
-      "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
-    ],
+    origin: origin,
     credentials: true,
   })
 );
