@@ -41,9 +41,9 @@ app.use(cookieParser());
 
 //alowed origin
 const origin = [
-  // "http://localhost:3000",
-  // "https://my-shop-client-tawny.vercel.app",
-  // "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
+  "http://localhost:3000",
+  "https://my-shop-client-tawny.vercel.app",
+  "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
   "https://my-shop-client-git-next-auth-version-taifurislamashraf.vercel.app/",
 ];
 
