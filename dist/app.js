@@ -36,8 +36,18 @@ exports.app.use(express_1.default.json({ limit: "50mb" }));
 exports.app.use(express_1.default.urlencoded({ extended: true, limit: "50mb" }));
 //cookie-parser
 exports.app.use((0, cookie_parser_1.default)());
+//alowed origin
+const origin = [
+    // "http://localhost:3000",
+    // "https://my-shop-client-tawny.vercel.app",
+    // "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
+    "https://my-shop-client-git-next-auth-version-taifurislamashraf.vercel.app/",
+];
 //cors setup
-exports.app.use((0, cors_1.default)({ origin: ["http://localhost:3000"], credentials: true }));
+exports.app.use((0, cors_1.default)({
+    origin: origin,
+    credentials: true,
+}));
 // console.log(require("crypto").randomBytes(32).toString("hex"));
 //all routes here
 exports.app.use("/api/v1/user", user_route_1.default);
@@ -52,7 +62,7 @@ exports.app.use("/api/v1/cart", cart_route_1.default);
 exports.app.get("/", (0, express_async_handler_1.default)(async (req, res) => {
     res.status(200).json({
         success: true,
-        message: "Test successfully",
+        message: "Test successfully new",
         data: "This is Test Data",
     });
 }));

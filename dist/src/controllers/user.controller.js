@@ -80,7 +80,7 @@ exports.logout = (0, express_async_handler_1.default)(async (req, res, next) => 
 });
 //update access token
 exports.updateAccessToken = (0, express_async_handler_1.default)(async (req, res, next) => {
-    const refresh_token = req.cookies.refresh_token;
+    const refresh_token = req.headers.refresh_token;
     if (!refresh_token) {
         (0, errorHandler_1.errorMessage)(res, 400, "Please login to access this recourse");
     }
@@ -93,6 +93,7 @@ exports.updateAccessToken = (0, express_async_handler_1.default)(async (req, res
     if (!user) {
         (0, errorHandler_1.errorMessage)(res, 400, "Please login to access this recourse");
     }
+    const accessTokenExpire = parseInt(secret_1.default.accessTokenExpire);
     const accessToken = (0, genarateJwtToken_1.genarateJwtToken)({
         payload: { _id: userId },
         jwtSecret: secret_1.default.accessTokenSecret,
@@ -103,12 +104,15 @@ exports.updateAccessToken = (0, express_async_handler_1.default)(async (req, res
         jwtSecret: secret_1.default.refreshTokenSecret,
         expireIn: "30d",
     });
+    const expireTime = accessTokenExpire * 60 * 1000;
     res.locals.user = user;
-    res.cookie("access_token", accessToken, jwt_1.accessTokenCookieOptions);
-    res.cookie("refresh_token", refreshToken, jwt_1.refreshTokenCookieOptions);
+    // res.cookie("access_token", accessToken, accessTokenCookieOptions);
+    // res.cookie("refresh_token", refreshToken, refreshTokenCookieOptions);
     res.status(200).json({
         success: true,
         accessToken,
+        refreshToken,
+        expireIn: new Date().setTime(new Date().getTime() + expireTime),
     });
 });
 exports.getUserInfo = (0, express_async_handler_1.default)(async (req, res, next) => {

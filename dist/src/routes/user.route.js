@@ -14,7 +14,7 @@ userRoute.post("/register", (0, validator_1.validator)(user_schema_1.userSchemaV
 userRoute.post("/activate", (0, validator_1.validator)(user_schema_1.activateUserSchema), user_controller_1.activateUser);
 userRoute.post("/login", (0, validator_1.validator)(user_schema_1.loginUserSchema), user_controller_1.loginUser);
 userRoute.get("/logout", authGard_1.isAuthenticated, user_controller_1.logout);
-userRoute.get("/refresh", user_controller_1.updateAccessToken);
+userRoute.post("/refresh", user_controller_1.updateAccessToken);
 userRoute.get("/me", authGard_1.isAuthenticated, user_controller_1.getUserInfo);
 userRoute.get("/social-auth", user_controller_1.socialAuth);
 userRoute.put("/update-info", authGard_1.isAuthenticated, user_controller_1.updateUserInfo);
