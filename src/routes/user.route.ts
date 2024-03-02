@@ -36,7 +36,7 @@ userRoute.post("/register", validator(userSchemaValidator), registerUser);
 userRoute.post("/activate", validator(activateUserSchema), activateUser);
 userRoute.post("/login", validator(loginUserSchema), loginUser);
 userRoute.get("/logout", isAuthenticated, logout);
-userRoute.get("/refresh", updateAccessToken);
+userRoute.post("/refresh", updateAccessToken);
 userRoute.get("/me", isAuthenticated, getUserInfo);
 userRoute.get("/social-auth", socialAuth);
 userRoute.put("/update-info", isAuthenticated, updateUserInfo);

@@ -114,12 +114,11 @@ export const logout = asyncHandler(
 //update access token
 export const updateAccessToken = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const refresh_token = req.body.refresh_token as string;
+    const refresh_token = req.headers.refresh_token as string;
 
     if (!refresh_token) {
       errorMessage(res, 400, "Please login to access this recourse");
     }
-
     const decoded = verifyJwtToken(
       refresh_token,
       secret.refreshTokenSecret
@@ -136,7 +135,7 @@ export const updateAccessToken = asyncHandler(
       errorMessage(res, 400, "Please login to access this recourse");
     }
 
-    const accessTokenExpire = parseInt(secret.accessTokenExpire || "1", 10);
+    const accessTokenExpire = parseInt(secret.accessTokenExpire!);
 
     const accessToken = genarateJwtToken({
       payload: { _id: userId },
