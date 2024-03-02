@@ -73,7 +73,7 @@ app.get(
   asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
-      message: "Test successfully",
+      message: "Test successfully new",
       data: "This is Test Data",
     });
   })
