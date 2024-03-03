@@ -10,9 +10,6 @@ export const addCartItem = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const cartSession = req.cookies.cart_session;
 
-  console.log("body", req.body);
-  console.log("cookies", cartSession);
-
   const product = await ProductModel.findById(productId);
   if (!product) {
     errorMessage(res, 404, "Product not exist");
@@ -69,6 +66,8 @@ export const addCartItem = asyncHandler(async (req, res) => {
     res.cookie("cart_session", sessionId, {
       httpOnly: true,
       expires: expiarationDate,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     });
 
     res.status(200).json({
