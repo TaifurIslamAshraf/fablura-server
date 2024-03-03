@@ -10,6 +10,9 @@ export const addCartItem = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const cartSession = req.cookies.cart_session;
 
+  console.log("body", req.body);
+  console.log("cookies", cartSession);
+
   const product = await ProductModel.findById(productId);
   if (!product) {
     errorMessage(res, 404, "Product not exist");
