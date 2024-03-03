@@ -86,6 +86,8 @@ export const getCartItem = asyncHandler(async (req, res) => {
     errorMessage(res, 400, "Invalid Cart Product");
   }
 
+  console.log("getCartSessin", sessionId);
+
   const cart = await CartModel.aggregate([
     {
       $match: { sessionId: sessionId },
