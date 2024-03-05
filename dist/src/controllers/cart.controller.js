@@ -13,8 +13,6 @@ const product_model_1 = __importDefault(require("../models/product.model"));
 exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
     const { productId } = req.body;
     const cartSession = req.cookies.cart_session;
-    console.log("body", req.body);
-    console.log("cookies", cartSession);
     const product = await product_model_1.default.findById(productId);
     if (!product) {
         (0, errorHandler_1.errorMessage)(res, 404, "Product not exist");
@@ -59,6 +57,8 @@ exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
         res.cookie("cart_session", sessionId, {
             httpOnly: true,
             expires: expiarationDate,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         });
         res.status(200).json({
             success: true,
@@ -70,10 +70,11 @@ exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
 exports.getCartItem = (0, express_async_handler_1.default)(async (req, res) => {
     // find session cart
     const sessionId = req.cookies.cart_session;
+    console.log("getCartSessin", sessionId);
+    console.log("all cookies", req.cookies);
     if (!sessionId) {
         (0, errorHandler_1.errorMessage)(res, 400, "Invalid Cart Product");
     }
-    console.log("getCartSessin", sessionId);
     const cart = await cart_model_1.default.aggregate([
         {
             $match: { sessionId: sessionId },
