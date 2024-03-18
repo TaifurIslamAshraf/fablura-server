@@ -46,7 +46,7 @@ app.use(cookieParser());
 // "http://172.18.192.1:3000",
 
 //alowed origin
-const origin = ["http://178.16.139.2:3000", "http://localhost:3000"];
+const origin = ["http://178.16.139.2:3000"];
 
 //cors setup
 app.use(
