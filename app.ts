@@ -39,13 +39,14 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 //cookie-parser
 app.use(cookieParser());
 
+// "http://localhost:3000",
+// "https://my-shop-client-tawny.vercel.app",
+// "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
+// "https://my-shop-client-git-next-auth-version-taifurislamashraf.vercel.app/",
+// "http://172.18.192.1:3000",
+
 //alowed origin
-const origin = [
-  "http://localhost:3000",
-  "https://my-shop-client-tawny.vercel.app",
-  "https://my-shop-client-1wulznv9q-taifurislamashraf.vercel.app",
-  "https://my-shop-client-git-next-auth-version-taifurislamashraf.vercel.app/",
-];
+const origin = ["http://178.16.139.2:3000"];
 
 //cors setup
 app.use(
