@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import secret from "../config/secret";
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import CartModel from "../models/cart.model";
@@ -45,6 +46,8 @@ export const createOrder = asyncHandler(async (req, res) => {
   if (!user) {
     res.cookie(`orders-${order.orderId}`, JSON.stringify(order.orderId), {
       maxAge: 365 * 24 * 60 * 60 * 1000,
+      domain: secret.clientUrl,
+      path: "/",
     });
   }
 
