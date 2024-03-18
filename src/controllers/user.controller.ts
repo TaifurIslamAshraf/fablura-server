@@ -199,6 +199,7 @@ export const socialAuth = asyncHandler(async (req: Request, res: Response) => {
 export const updateUserAvatar = asyncHandler(async (req, res) => {
   const userId = res.locals.user._id;
   const user = await UserModel.findById(userId);
+  console.log(req.file);
   if (!user) {
     errorMessage(res, 404, "User not found");
   }

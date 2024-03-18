@@ -51,7 +51,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   };
 
   productData.slug = slugify(name);
-
+  console.log(req.files);
   const imagesPath: string[] | undefined = (
     req.files as Express.Multer.File[]
   ).map((file: Express.Multer.File) => file.path);
