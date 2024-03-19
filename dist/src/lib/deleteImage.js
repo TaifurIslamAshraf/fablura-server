@@ -5,10 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteMultipleImages = exports.deleteImage = void 0;
 const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const deleteImage = async (filePath) => {
     if (filePath) {
         return new Promise((resolve, reject) => {
-            fs_1.default.unlink(filePath, (err) => {
+            const imagePath = path_1.default.join(__dirname, "..", "..", "..", filePath.replace(/\\/g, "/"));
+            fs_1.default.unlink(imagePath, (err) => {
                 if (err) {
                     if (err.code === "ENOENT") {
                         console.log("File not found");
@@ -28,7 +30,9 @@ const deleteMultipleImages = async (filePaths) => {
         const unlinkPromises = [];
         filePaths.map((file) => {
             const unlinkPromise = new Promise((resolve) => {
-                fs_1.default.unlink(file, (err) => {
+                const filePath = path_1.default.join(__dirname, "..", "..", "..", file.replace(/\\/g, "/"));
+                console.log(filePath);
+                fs_1.default.unlink(filePath, (err) => {
                     if (err && err.code === "ENOENT") {
                         console.log(`File not found ${file}`);
                     }
