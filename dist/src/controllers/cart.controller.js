@@ -70,8 +70,6 @@ exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
 exports.getCartItem = (0, express_async_handler_1.default)(async (req, res) => {
     // find session cart
     const sessionId = req.cookies.cart_session;
-    console.log("getCartSessin", sessionId);
-    console.log("all cookies", req.cookies);
     if (!sessionId) {
         (0, errorHandler_1.errorMessage)(res, 400, "Invalid Cart Product");
     }
@@ -224,7 +222,6 @@ node_cron_1.default.schedule("0 0 0 * * *", async () => {
         await cart_model_1.default.deleteMany({
             createdAt: { $lt: twoMothAgo },
         });
-        console.log("Delete expire cart");
     }
     catch (error) {
         console.log(error.message);

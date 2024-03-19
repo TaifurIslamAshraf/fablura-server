@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrderStatus = exports.getSealesReport = exports.deleteOrders = exports.getAllOrders = exports.updateOrderStatus = exports.getUserOrders = exports.getSignleOrder = exports.createOrder = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const secret_1 = __importDefault(require("../config/secret"));
 const errorHandler_1 = require("../lib/errorHandler");
 const generateId_1 = require("../lib/generateId");
 const cart_model_1 = __importDefault(require("../models/cart.model"));
@@ -33,8 +32,9 @@ exports.createOrder = (0, express_async_handler_1.default)(async (req, res) => {
     if (!user) {
         res.cookie(`orders-${order.orderId}`, JSON.stringify(order.orderId), {
             maxAge: 365 * 24 * 60 * 60 * 1000,
-            domain: secret_1.default.clientUrl,
-            path: "/",
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         });
     }
     const sessionId = req.cookies.cart_session;

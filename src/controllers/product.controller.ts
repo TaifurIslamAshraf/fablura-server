@@ -51,7 +51,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   };
 
   productData.slug = slugify(name);
-  console.log(req.files);
+
   const imagesPath: string[] | undefined = (
     req.files as Express.Multer.File[]
   ).map((file: Express.Multer.File) => file.path);
@@ -242,6 +242,10 @@ export const updateProduct = asyncHandler(async (req, res) => {
 //delete product
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
+
+  const refresh_token = req.headers.refresh_token as string;
+  console.log(refresh_token, "delete product");
+  console.log(req.params);
 
   const product = await ProductModel.findById(id);
   if (!product) {

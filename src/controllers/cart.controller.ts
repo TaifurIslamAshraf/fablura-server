@@ -81,8 +81,7 @@ export const addCartItem = asyncHandler(async (req, res) => {
 export const getCartItem = asyncHandler(async (req, res) => {
   // find session cart
   const sessionId = req.cookies.cart_session;
-  console.log("getCartSessin", sessionId);
-  console.log("all cookies", req.cookies);
+
   if (!sessionId) {
     errorMessage(res, 400, "Invalid Cart Product");
   }
@@ -296,8 +295,6 @@ corn.schedule("0 0 0 * * *", async () => {
     await CartModel.deleteMany({
       createdAt: { $lt: twoMothAgo },
     });
-
-    console.log("Delete expire cart");
   } catch (error: any) {
     console.log(error.message);
   }

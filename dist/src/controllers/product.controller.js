@@ -161,6 +161,9 @@ exports.updateProduct = (0, express_async_handler_1.default)(async (req, res) =>
 //delete product
 exports.deleteProduct = (0, express_async_handler_1.default)(async (req, res) => {
     const { id } = req.params;
+    const refresh_token = req.headers.refresh_token;
+    console.log(refresh_token, "delete product");
+    console.log(req.params);
     const product = await product_model_1.default.findById(id);
     if (!product) {
         (0, errorHandler_1.errorMessage)(res, 404, "Product not found !");
