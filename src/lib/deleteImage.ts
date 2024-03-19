@@ -4,7 +4,13 @@ import path from "path";
 export const deleteImage = async (filePath: string) => {
   if (filePath) {
     return new Promise((resolve, reject) => {
-      const imagePath = path.join(__dirname, "..", "..", filePath);
+      const imagePath = path.join(
+        __dirname,
+        "..",
+        "..",
+        "..",
+        filePath.replace(/\\/g, "/")
+      );
       fs.unlink(imagePath, (err) => {
         if (err) {
           if (err.code === "ENOENT") {
@@ -25,7 +31,14 @@ export const deleteMultipleImages = async (filePaths: string[]) => {
 
     filePaths.map((file) => {
       const unlinkPromise = new Promise<void>((resolve) => {
-        const filePath = path.join(__dirname, "..", "..", file);
+        const filePath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          file.replace(/\\/g, "/")
+        );
+        console.log(filePath);
         fs.unlink(filePath, (err) => {
           if (err && err.code === "ENOENT") {
             console.log(`File not found ${file}`);
