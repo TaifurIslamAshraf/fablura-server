@@ -243,10 +243,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const refresh_token = req.headers.refresh_token as string;
-  console.log(refresh_token, "delete product");
-  console.log(req.params);
-
   const product = await ProductModel.findById(id);
   if (!product) {
     errorMessage(res, 404, "Product not found !");
