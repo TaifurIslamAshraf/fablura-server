@@ -9,7 +9,7 @@ import UserModel from "../models/user.model";
 export const isAuthenticated = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const refresh_token = req.headers.refresh_token as string;
-
+    console.log(refresh_token);
     if (!refresh_token) {
       errorMessage(res, 400, "Please login to access this recourse");
     }
