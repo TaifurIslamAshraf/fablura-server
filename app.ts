@@ -40,7 +40,11 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
 //alowed origin
-const origin = ["http://178.16.139.2:3000", "http://localhost:3000"];
+const origin = [
+  "http://178.16.139.2:3000",
+  "http://localhost:3000",
+  "https://varimartbd.com",
+];
 
 //cors setup
 app.use(

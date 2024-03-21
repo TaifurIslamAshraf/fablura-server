@@ -572,3 +572,4 @@
 ::1 - - [21/Mar/2024:07:54:43 +0000] "GET /public/uploads/users/1710862953680-taifur88.png HTTP/1.1" 404 89 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
 ::1 - - [21/Mar/2024:07:54:43 +0000] "GET /public/uploads/products/1710827269791-product-grey.png HTTP/1.1" 404 96 "-" "node"
 ::1 - - [21/Mar/2024:07:54:43 +0000] "GET /public/uploads/customerReview/1710909649034-maple-1079235_1920.jpg HTTP/1.1" 404 108 "-" "node"
+::1 - - [21/Mar/2024:09:39:11 +0000] "GET /api/v1/user/me HTTP/1.1" 400 65 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
