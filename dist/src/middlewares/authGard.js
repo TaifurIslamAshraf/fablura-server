@@ -10,7 +10,7 @@ const errorHandler_1 = require("../lib/errorHandler");
 const verifyToken_1 = require("../lib/verifyToken");
 const user_model_1 = __importDefault(require("../models/user.model"));
 exports.isAuthenticated = (0, express_async_handler_1.default)(async (req, res, next) => {
-    const refresh_token = req.headers.refresh_token;
+    const refresh_token = req.cookies.refresh_token;
     if (!refresh_token) {
         (0, errorHandler_1.errorMessage)(res, 400, "Please login to access this recourse");
     }
