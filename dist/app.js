@@ -37,7 +37,11 @@ exports.app.use(express_1.default.urlencoded({ extended: true, limit: "50mb" }))
 //cookie-parser
 exports.app.use((0, cookie_parser_1.default)());
 //alowed origin
-const origin = ["https://varimartbd.com"];
+const origin = [
+    "https://my-shop-client-tawny.vercel.app",
+    "http://localhost:3000",
+    "https://my-shop-client-git-next-auth-version-taifurislamashraf.vercel.app",
+];
 //cors setup
 exports.app.use((0, cors_1.default)({
     origin: origin,
