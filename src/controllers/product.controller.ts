@@ -307,11 +307,11 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     parseInt(req.query.maxPrice as string) || Number.MAX_SAFE_INTEGER;
   const ratings = parseFloat(req.query.ratings as string) || 0;
 
-  const searchWords = (search as string)
-    .split(/\s+/)
-    .map((word) => `(?=.*\\b${word}\\b)`)
-    .join("");
-  const searchRegExp = new RegExp(`^${searchWords}.*$`, "i");
+  // const searchWords = (search as string)
+  //   .split(/\s+/)
+  //   .map((word) => `(?=.*\\b${word}\\b)`)
+  //   .join("");
+  // const searchRegExp = new RegExp(`^${searchWords}.*$`, "iu");
 
   const filter: any =
     {
@@ -319,8 +319,12 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       // subcategory: subcategory,
       // price: { $gte: minPrice, $lte: maxPrice },
       // ratings: { $gte: ratings },
-      $or: [{ name: { $regex: searchRegExp } }],
+      // $or: [{ name: { $regex: searchRegExp } }],
     } || {};
+
+  if (search) {
+    filter.$text = { $search: search };
+  }
 
   if (category) {
     filter.category = category;

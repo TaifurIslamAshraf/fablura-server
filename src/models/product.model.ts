@@ -171,6 +171,21 @@ const productSchema: Schema<IProduct> = new Schema(
   }
 );
 
+productSchema.index(
+  {
+    name: "text",
+    description: "text",
+    slug: "text",
+  },
+  {
+    weights: {
+      name: 5,
+      description: 3,
+      slug: 4,
+    },
+  }
+);
+
 // Discriminators
 const ProductModel: Model<IProduct> = mongoose.model<IProduct>(
   "Product",

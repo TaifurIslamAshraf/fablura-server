@@ -287,7 +287,7 @@ export const calculatePrice = asyncHandler(async (req, res) => {
   });
 });
 
-//delete cart tow month ago cart
+//delete cart two month ago cart
 corn.schedule("0 0 0 * * *", async () => {
   try {
     const twoMothAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
