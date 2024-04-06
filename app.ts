@@ -8,7 +8,6 @@ import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import morgan from "morgan";
 
-import secret from "./src/config/secret";
 import { errorHandler, notFound } from "./src/lib/errorHandler";
 import bannerRoute from "./src/routes/banner.route";
 import cartRoute from "./src/routes/cart.route";
@@ -41,7 +40,7 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
 //alowed origin
-const origin = secret.origins;
+const origin = ["https://varimartbd.com"];
 
 //cors setup
 app.use(
