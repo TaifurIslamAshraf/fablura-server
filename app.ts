@@ -8,6 +8,7 @@ import express, { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import morgan from "morgan";
 
+import secret from "./src/config/secret";
 import { errorHandler, notFound } from "./src/lib/errorHandler";
 import bannerRoute from "./src/routes/banner.route";
 import cartRoute from "./src/routes/cart.route";
@@ -40,11 +41,7 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
 //alowed origin
-const origin = [
-  "https://my-shop-client-tawny.vercel.app",
-  "http://localhost:3000",
-  "https://my-shop-client-git-next-auth-version-taifurislamashraf.vercel.app",
-];
+const origin = secret.origins;
 
 //cors setup
 app.use(
