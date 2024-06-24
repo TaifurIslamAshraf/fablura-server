@@ -8,6 +8,7 @@ dotenv_1.default.config();
 const secret = {
     serverUrl: process.env.SERVER_URL,
     clientUrl: process.env.CLIENT_URL,
+    origins: process.env.ORIGINS,
     PORT: process.env.PORT,
     dbUri: process.env.DB_URI,
     forgotPasswordSecret: process.env.FORGOT_PASSWORD_SECRET,
