@@ -176,6 +176,17 @@ const productSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
+productSchema.index({
+    name: "text",
+    description: "text",
+    slug: "text",
+}, {
+    weights: {
+        name: 5,
+        description: 3,
+        slug: 4,
+    },
+});
 // Discriminators
 const ProductModel = mongoose_1.default.model("Product", productSchema);
 ProductModel.discriminator("electronics", electronicsSchema);

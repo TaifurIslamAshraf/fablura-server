@@ -215,7 +215,7 @@ exports.calculatePrice = (0, express_async_handler_1.default)(async (req, res) =
         totalDiscountPrice,
     });
 });
-//delete cart tow month ago cart
+//delete cart two month ago cart
 node_cron_1.default.schedule("0 0 0 * * *", async () => {
     try {
         const twoMothAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);

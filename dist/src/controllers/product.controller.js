@@ -212,18 +212,21 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     const minPrice = parseInt(req.query.minPrice) || 0;
     const maxPrice = parseInt(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
     const ratings = parseFloat(req.query.ratings) || 0;
-    const searchWords = search
-        .split(/\s+/)
-        .map((word) => `(?=.*\\b${word}\\b)`)
-        .join("");
-    const searchRegExp = new RegExp(`^${searchWords}.*$`, "i");
+    // const searchWords = (search as string)
+    //   .split(/\s+/)
+    //   .map((word) => `(?=.*\\b${word}\\b)`)
+    //   .join("");
+    // const searchRegExp = new RegExp(`^${searchWords}.*$`, "iu");
     const filter = {
-        // category: category,
-        // subcategory: subcategory,
-        // price: { $gte: minPrice, $lte: maxPrice },
-        // ratings: { $gte: ratings },
-        $or: [{ name: { $regex: searchRegExp } }],
+    // category: category,
+    // subcategory: subcategory,
+    // price: { $gte: minPrice, $lte: maxPrice },
+    // ratings: { $gte: ratings },
+    // $or: [{ name: { $regex: searchRegExp } }],
     } || {};
+    if (search) {
+        filter.$text = { $search: search };
+    }
     if (category) {
         filter.category = category;
     }
