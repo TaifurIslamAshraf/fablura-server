@@ -12228,6 +12228,7 @@
 ::ffff:127.0.0.1 - - [24/Jun/2024:16:03:19 +0000] "GET /api/v1/banner/get-all-banners?bannerType=topBanner&category= HTTP/1.1" 201 192 "-" "node"
 ::1 - - [24/Jun/2024:16:08:09 +0000] "GET / HTTP/1.1" 200 77 "-" "-"
 ::ffff:127.0.0.1 - - [24/Jun/2024:16:12:02 +0000] "GET /api/v1/banner/get-all-banners?bannerType=topBanner&category= HTTP/1.1" 201 192 "-" "node"
+<<<<<<< HEAD
 ::1 - - [24/Jun/2024:16:28:52 +0000] "GET /api/v1/banner/get-all-banners?bannerType=topBanner&category= HTTP/1.1" 201 192 "-" "node"
 ::ffff:127.0.0.1 - - [24/Jun/2024:16:28:53 +0000] "GET /public/uploads/products/1712426280713-Ujiiboni-female-02.jpg HTTP/1.1" 200 408760 "-" "node"
 ::1 - - [24/Jun/2024:16:28:53 +0000] "GET /public/uploads/products/1712426280709-0-ujjiboni-famale-harbal-varimart-size.jpg HTTP/1.1" 200 644463 "-" "node"
@@ -16004,3 +16005,5 @@
 ::ffff:127.0.0.1 - - [25/Jun/2024:23:34:45 +0000] "OPTIONS /api/v1/cart/add-to-cart HTTP/1.1" 204 0 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36"
 ::ffff:127.0.0.1 - - [25/Jun/2024:23:34:45 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 500 85 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36"
 ::1 - - [25/Jun/2024:23:34:45 +0000] "GET /api/v1/cart/updated-price HTTP/1.1" 200 58 "-" "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36"
+=======
+>>>>>>> ea8f9bd97d24ccccaaa3b0d7fadb916ad987a7a9
