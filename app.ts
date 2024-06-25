@@ -40,7 +40,7 @@ app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 app.use(cookieParser());
 
 //alowed origin
-const origin = ["https://varimartbd.com"];
+const origin = ["https://varimartbd.com", "https://www.varimartbd.com"];
 
 //cors setup
 app.use(
