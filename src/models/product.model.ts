@@ -112,11 +112,11 @@ const productSchema: Schema<IProduct> = new Schema(
     },
     price: {
       type: Number,
-      required: [true, "Product price is required"],
     },
     discountPrice: {
       type: String,
       default: 0,
+      required: [true, "Product descountPrice price is required"],
     },
     stock: {
       type: Number,
