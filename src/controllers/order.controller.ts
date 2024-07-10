@@ -84,10 +84,7 @@ export const getSignleOrder = asyncHandler(async (req, res) => {
   const objectId = new mongoose.Types.ObjectId(id);
   console.log(objectId);
 
-  const order = await OrderModel.findById(objectId).populate(
-    "user",
-    "fullName email"
-  );
+  const order = await OrderModel.findById(objectId);
 
   console.log(order);
 
