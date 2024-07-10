@@ -81,6 +81,8 @@ export const getSignleOrder = asyncHandler(async (req, res) => {
     "fullName email"
   );
 
+  console.log(order);
+
   if (!order) {
     errorMessage(res, 404, "Order not found");
   }
