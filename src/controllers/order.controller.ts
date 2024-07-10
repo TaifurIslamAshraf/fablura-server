@@ -1,4 +1,5 @@
 import asyncHandler from "express-async-handler";
+import mongoose from "mongoose";
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import CartModel from "../models/cart.model";
@@ -76,12 +77,16 @@ export const createOrder = asyncHandler(async (req, res) => {
 export const getSignleOrder = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const order = await OrderModel.findById(id).populate(
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return errorMessage(res, 400, "Invalid order ID");
+  }
+
+  const objectId = new mongoose.Types.ObjectId(id);
+
+  const order = await OrderModel.findById(objectId).populate(
     "user",
     "fullName email"
   );
-
-  console.log(order);
 
   if (!order) {
     errorMessage(res, 404, "Order not found");
