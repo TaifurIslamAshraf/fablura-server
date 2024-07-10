@@ -77,19 +77,23 @@ export const createOrder = asyncHandler(async (req, res) => {
 export const getSignleOrder = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  // Check if id is empty or invalid
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
     return errorMessage(res, 400, "Invalid order ID");
   }
 
   const objectId = new mongoose.Types.ObjectId(id);
-  console.log(objectId);
 
+  // Find order without populating the user field
   const order = await OrderModel.findById(objectId);
 
-  console.log(order);
-
   if (!order) {
-    errorMessage(res, 404, "Order not found");
+    return errorMessage(res, 404, "Order not found");
+  }
+
+  // Check if the user field is present
+  if (order?.user) {
+    await order.populate("user", "fullName email");
   }
 
   res.status(200).json({
