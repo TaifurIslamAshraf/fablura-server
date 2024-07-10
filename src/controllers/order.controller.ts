@@ -82,11 +82,14 @@ export const getSignleOrder = asyncHandler(async (req, res) => {
   }
 
   const objectId = new mongoose.Types.ObjectId(id);
+  console.log(objectId);
 
   const order = await OrderModel.findById(objectId).populate(
     "user",
     "fullName email"
   );
+
+  console.log(order);
 
   if (!order) {
     errorMessage(res, 404, "Order not found");
