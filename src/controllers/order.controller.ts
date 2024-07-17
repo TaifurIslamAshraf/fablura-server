@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import mongoose from "mongoose";
+import secret from "../config/secret";
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import { sendMails } from "../lib/sendMail";
@@ -68,7 +69,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   );
 
   const emailPayload = {
-    email: "taifurislamashraf@gmail.com",
+    email: secret.smtpMail!,
     subject: "New Order Notification",
     templete: "orderConfirmation.ejs",
     data: order,
