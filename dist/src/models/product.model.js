@@ -52,7 +52,7 @@ const productReviews = new mongoose_1.default.Schema({
     },
     createdOn: {
         type: Date,
-        default: Date.now(),
+        default: () => new Date(),
     },
 });
 const electronicsSchema = new mongoose_1.default.Schema({
@@ -124,11 +124,11 @@ const productSchema = new mongoose_1.Schema({
     },
     price: {
         type: Number,
-        required: [true, "Product price is required"],
     },
     discountPrice: {
         type: String,
         default: 0,
+        required: [true, "Product descountPrice price is required"],
     },
     stock: {
         type: Number,

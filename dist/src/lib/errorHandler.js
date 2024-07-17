@@ -17,6 +17,7 @@ const errorHandler = (err, req, res, next) => {
     let message = err.message;
     //mongoose not found error
     if (err.name === "CastError" && err.kind === "ObjectId") {
+        console.log("orders", err);
         statusCode = 404;
         message = "Resource not found !";
     }

@@ -5,8 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOrderStatus = exports.getSealesReport = exports.deleteOrders = exports.getAllOrders = exports.updateOrderStatus = exports.getUserOrders = exports.getSignleOrder = exports.createOrder = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const secret_1 = __importDefault(require("../config/secret"));
 const errorHandler_1 = require("../lib/errorHandler");
 const generateId_1 = require("../lib/generateId");
+const sendMail_1 = require("../lib/sendMail");
 const cart_model_1 = __importDefault(require("../models/cart.model"));
 const order_mode_1 = __importDefault(require("../models/order.mode"));
 const order_services_1 = require("../services/order.services");
@@ -44,6 +47,13 @@ exports.createOrder = (0, express_async_handler_1.default)(async (req, res) => {
             cartItem: { productId: { $in: productItemIds } },
         },
     }, { new: true });
+    const emailPayload = {
+        email: secret_1.default.smtpMail,
+        subject: "New Order Notification",
+        templete: "orderConfirmation.ejs",
+        data: order,
+    };
+    await (0, sendMail_1.sendMails)(emailPayload);
     res.status(201).json({
         success: true,
         message: "Order Plased successfull",
@@ -53,9 +63,19 @@ exports.createOrder = (0, express_async_handler_1.default)(async (req, res) => {
 //get single order
 exports.getSignleOrder = (0, express_async_handler_1.default)(async (req, res) => {
     const { id } = req.params;
-    const order = await order_mode_1.default.findById(id).populate("user", "fullName email");
+    // Check if id is empty or invalid
+    if (!id || !mongoose_1.default.Types.ObjectId.isValid(id)) {
+        return (0, errorHandler_1.errorMessage)(res, 400, "Invalid order ID");
+    }
+    const objectId = new mongoose_1.default.Types.ObjectId(id);
+    // Find order without populating the user field
+    const order = await order_mode_1.default.findById(objectId);
     if (!order) {
-        (0, errorHandler_1.errorMessage)(res, 404, "Order not found");
+        return (0, errorHandler_1.errorMessage)(res, 404, "Order not found");
+    }
+    // Check if the user field is present
+    if (order?.user) {
+        await order.populate("user", "fullName email");
     }
     res.status(200).json({
         success: true,
