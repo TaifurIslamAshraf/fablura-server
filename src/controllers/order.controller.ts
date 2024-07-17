@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import mongoose from "mongoose";
 import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
+import { sendMails } from "../lib/sendMail";
 import CartModel from "../models/cart.model";
 import OrderModel from "../models/order.mode";
 import {
@@ -65,6 +66,15 @@ export const createOrder = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+
+  const emailPayload = {
+    email: "taifurislamashraf@gmail.com",
+    subject: "New Order Notification",
+    templete: "orderConfirmation.ejs",
+    data: order,
+  };
+
+  await sendMails(emailPayload);
 
   res.status(201).json({
     success: true,
