@@ -43,7 +43,7 @@ app.use(cookieParser());
 const origin = [
   "https://varimartbd.com",
   "https://www.varimartbd.com",
-  // "http://localhost:3000",
+  "http://localhost:3000",
 ];
 
 //cors setup
