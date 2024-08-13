@@ -307,20 +307,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     parseInt(req.query.maxPrice as string) || Number.MAX_SAFE_INTEGER;
   const ratings = parseFloat(req.query.ratings as string) || 0;
 
-  // const searchWords = (search as string)
-  //   .split(/\s+/)
-  //   .map((word) => `(?=.*\\b${word}\\b)`)
-  //   .join("");
-  // const searchRegExp = new RegExp(`^${searchWords}.*$`, "iu");
-
-  const filter: any =
-    {
-      // category: category,
-      // subcategory: subcategory,
-      // price: { $gte: minPrice, $lte: maxPrice },
-      // ratings: { $gte: ratings },
-      // $or: [{ name: { $regex: searchRegExp } }],
-    } || {};
+  const filter: any = {};
 
   if (search) {
     filter.$text = { $search: search };
@@ -329,14 +316,24 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   if (category) {
     filter.category = category;
   }
+
   if (subcategory) {
     filter.subcategory = subcategory;
   }
-  filter.$and = [
-    { discountPrice: { $exists: true } },
-    { discountPrice: { $gte: minPrice, $lte: maxPrice } },
-  ];
-  filter.ratings = { $gte: ratings };
+
+  // Use $expr to compare discountPrice as a number
+  filter.$expr = {
+    $and: [
+      { $gte: [{ $toDouble: "$discountPrice" }, minPrice] },
+      { $lte: [{ $toDouble: "$discountPrice" }, maxPrice] },
+    ],
+  };
+
+  if (ratings > 0) {
+    filter.ratings = { $gte: ratings };
+  }
+
+  console.log("Filter:", JSON.stringify(filter, null, 2)); // Debug log
 
   const products = await ProductModel.find(filter)
     .select("-reviews")
@@ -346,8 +343,9 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 });
 
   if (!products || products.length < 1) {
-    errorMessage(res, 404, "No Product availble");
+    return errorMessage(res, 404, "No Product available");
   }
+
   const productCount = await ProductModel.countDocuments(filter);
   const categories = await ProductModel.distinct("category", filter);
   const allSubcategory = await SubCategoryModel.find({
@@ -358,7 +356,6 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     success: true,
     message: "All products here",
     products,
-
     allSubcategory,
     pagination: {
       numberOfProducts: productCount,
