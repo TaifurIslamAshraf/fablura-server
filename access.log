@@ -3455,3 +3455,7 @@
 ::1 - - [13/Aug/2024:12:37:25 +0000] "GET /api/v1/review/get-customer-review HTTP/1.1" 201 68 "-" "node"
 ::1 - - [13/Aug/2024:12:37:25 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 400 49 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
 ::1 - - [13/Aug/2024:12:37:25 +0000] "GET /api/v1/cart/updated-price HTTP/1.1" 400 49 "http://localhost:3000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+::1 - - [30/Aug/2024:15:34:11 +0000] "GET /public/uploads/products/1712426256498-02-second-pic.jpg HTTP/1.1" 200 321456 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+::1 - - [30/Aug/2024:15:34:11 +0000] "GET /favicon.ico HTTP/1.1" 404 53 "http://localhost:8000/public/uploads/products/1712426256498-02-second-pic.jpg" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+::1 - - [30/Aug/2024:15:34:13 +0000] "GET /public/uploads/products/1712426256498-02-second-pic.jpg HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+::1 - - [30/Aug/2024:15:34:14 +0000] "GET /public/uploads/products/1712426256498-02-second-pic.jpg HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
