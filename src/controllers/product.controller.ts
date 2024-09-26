@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-
+import _ from "lodash"
 import { IPorductReviews } from "../../types/product";
 import { deleteMultipleImages } from "../lib/deleteImage";
 import { errorMessage } from "../lib/errorHandler";
@@ -13,37 +13,23 @@ import UserModel from "../models/user.model";
 export const createProduct = asyncHandler(async (req, res) => {
   const {
     name,
-    descriptionType,
     price,
     discountPrice,
     stock,
     shipping,
     category,
     subcategory,
-
-    ingredients,
-    foodDesc,
+    description,
     colors,
-    brand,
-    warrantyPeriod,
-    countryOrigin,
-    batteryCapacity,
-    features,
-    dimensions,
-    model,
-    waterproof,
-    powerSupply,
-    bodyMaterials,
-    chargingTime,
   } = req.body;
 
   let productData: any = {
     name,
-    descriptionType,
+    description,
     price: parseInt(price),
     discountPrice,
     stock: parseInt(stock),
-
+    colors,
     shipping: parseInt(shipping),
     category,
     subcategory,
@@ -63,40 +49,12 @@ export const createProduct = asyncHandler(async (req, res) => {
   if (req.files) {
     productData.images = imagesPath;
   }
+  
 
   const nameisExitst = await ProductModel.findOne({ name });
   if (nameisExitst) {
-    deleteMultipleImages(imagesPath);
+   await deleteMultipleImages(imagesPath);
     errorMessage(res, 400, "Product name should be unique");
-  }
-
-  // Add description field based on descriptionType
-  if (descriptionType === "foods") {
-    productData = {
-      ...productData,
-      description: {
-        ingredients,
-        foodDesc,
-      },
-    };
-  } else if (descriptionType === "electronics") {
-    productData = {
-      ...productData,
-      description: {
-        colors,
-        brand,
-        warrantyPeriod,
-        countryOrigin,
-        batteryCapacity,
-        features,
-        dimensions,
-        model,
-        waterproof,
-        powerSupply,
-        bodyMaterials,
-        chargingTime,
-      },
-    };
   }
 
   const product = await ProductModel.create(productData);
@@ -120,28 +78,16 @@ export const updateProduct = asyncHandler(async (req, res) => {
     shipping,
     category,
     subcategory,
-    descriptionType,
-
-    ingredients,
-    foodDesc,
-    color,
-    brand,
-    warrantyPeriod,
-    countryOrigin,
-    batteryCapacity,
-    features,
-    dimensions,
-    model,
-    waterproof,
-    powerSupply,
-    bodyMaterials,
-    chargingTime,
+    description,
+    colors,
   } = req.body;
 
   let productData: any = {
     name,
     price,
     discountPrice,
+    description,
+    colors,
     stock,
     sold,
     shipping,
@@ -169,53 +115,23 @@ export const updateProduct = asyncHandler(async (req, res) => {
     errorMessage(res, 400, "Product name should be unique");
   }
 
-  // Add description field based on descriptionType
-  let updatedDescription: any = {};
-
-  if (
-    descriptionType === "foods" ||
-    existingProduct?.descriptionType === "foods"
-  ) {
-    updatedDescription = {
-      ...existingProduct?.description,
-      ...(ingredients && { ingredients }),
-      ...(foodDesc && { foodDesc }),
-    };
-  } else if (
-    descriptionType === "electronics" ||
-    existingProduct?.descriptionType === "electronics"
-  ) {
-    updatedDescription = {
-      ...existingProduct?.description,
-      ...(color && { color }),
-      ...(brand && { brand }),
-      ...(warrantyPeriod && { warrantyPeriod }),
-      ...(countryOrigin && { countryOrigin }),
-      ...(batteryCapacity && { batteryCapacity }),
-      ...(features && { features }),
-      ...(dimensions && { dimensions }),
-      ...(model && { model }),
-      ...(waterproof && { waterproof }),
-      ...(powerSupply && { powerSupply }),
-      ...(bodyMaterials && { bodyMaterials }),
-      ...(chargingTime && { chargingTime }),
-    };
-  }
-
   if (imagesPath.length > 0) {
     productData.images = imagesPath;
   }
 
-  productData.description = updatedDescription;
-  const updatedProduct = await ProductModel.findByIdAndUpdate(id, productData, {
-    new: true,
-  });
+   // Deep merge the new data with existing product data using Lodash
+   const updatedProductData = _.merge(existingProduct!.toObject(), productData);
+  
+   const updatedProduct = await ProductModel.findByIdAndUpdate(id, updatedProductData, {
+     new: true,
+   });
 
   if (updatedProduct && existingProduct?.images && imagesPath.length > 0) {
     deleteMultipleImages(existingProduct.images);
   }
 
   //price sync with cart price
+ if(price || discountPrice){
   const cartToUpdate = await CartModel.find({
     "cartItem.productId": id,
   });
@@ -231,6 +147,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       await cart.save();
     })
   );
+ }
 
   res.status(200).json({
     success: true,

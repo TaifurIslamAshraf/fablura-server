@@ -1,7 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 import {
-  IElectronicsDescription,
-  IFoodsDescription,
+
   IPorductReviews,
   IProduct,
 } from "../../types/product";
@@ -38,57 +37,7 @@ const productReviews: Schema<IPorductReviews> = new mongoose.Schema({
   },
 });
 
-const electronicsSchema: Schema<IElectronicsDescription> =
-  new mongoose.Schema<IElectronicsDescription>({
-    colors: {
-      type: String,
-      required: [true, "Product color is required !"],
-    },
-    brand: {
-      type: String,
-      required: [true, "Product brand is required !"],
-    },
-    warrantyPeriod: {
-      type: String,
-    },
-    countryOrigin: {
-      type: String,
-    },
-    batteryCapacity: {
-      type: String,
-    },
-    features: {
-      type: String,
-    },
-    dimensions: {
-      type: String,
-    },
-    model: {
-      type: String,
-    },
-    waterproof: {
-      type: String,
-    },
-    powerSupply: {
-      type: String,
-    },
-    bodyMaterials: {
-      type: String,
-    },
-    chargingTime: {
-      type: String,
-    },
-  });
 
-const foodsSchema: Schema<IFoodsDescription> =
-  new mongoose.Schema<IFoodsDescription>({
-    ingredients: {
-      type: String,
-    },
-    foodDesc: {
-      type: String,
-    },
-  });
 
 const productSchema: Schema<IProduct> = new Schema(
   {
@@ -104,12 +53,7 @@ const productSchema: Schema<IProduct> = new Schema(
       lowercase: true,
       trim: true,
     },
-    descriptionType: {
-      type: String,
-      enum: ["electronics", "foods"],
-      required: [true, "Product description type is required"],
-      trim: true,
-    },
+
     price: {
       type: Number,
     },
@@ -117,6 +61,22 @@ const productSchema: Schema<IProduct> = new Schema(
       type: String,
       default: 0,
       required: [true, "Product descountPrice price is required"],
+    },
+
+    description: {
+
+      type: String,
+      required: [true, "Product description is required"],
+    },
+
+    colors: {
+      type: [
+        {
+          name: { type: String, required: true },
+          stock: { type: Boolean, required: true },
+        }
+      ],
+      required: [true, "Product colors are required"],
     },
     stock: {
       type: Number,
@@ -150,10 +110,6 @@ const productSchema: Schema<IProduct> = new Schema(
       required: [true, "Category id is required"],
     },
 
-    description: {
-      type: Schema.Types.Mixed,
-      required: [true, "description is required"],
-    },
 
     ratings: {
       type: Number,
@@ -186,13 +142,9 @@ productSchema.index(
   }
 );
 
-// Discriminators
 const ProductModel: Model<IProduct> = mongoose.model<IProduct>(
   "Product",
   productSchema
 );
-
-ProductModel.discriminator("electronics", electronicsSchema);
-ProductModel.discriminator("foods", foodsSchema);
 
 export default ProductModel;

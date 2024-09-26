@@ -10,32 +10,13 @@ export interface IPorductReviews {
   createdOn?: Date;
 }
 
-export interface IElectronicsDescription {
-  colors: string;
-  brand: string;
-  warrantyPeriod?: string;
-  countryOrigin?: string;
-  batteryCapacity?: string;
-  features?: string;
-  dimensions?: string;
-  model?: string;
-  waterproof?: string;
-  powerSupply?: string;
-  bodyMaterials?: string;
-  chargingTime?: string;
-}
-
-export interface IFoodsDescription {
-  ingredients: string;
-  foodDesc: string;
-}
-
 export interface IProduct extends Document {
   name: string;
   slug: string;
-  descriptionType: "electronics" | "foods";
   price: number;
   discountPrice?: string;
+  description: string;
+  colors: {name: string, stock: boolean}[];
   stock: number;
   sold: number;
   soldAt: Date;
@@ -43,7 +24,6 @@ export interface IProduct extends Document {
   images: [string];
   numOfReviews: number;
   ratings?: number;
-  description: IElectronicsDescription | IFoodsDescription;
   category: mongoose.Schema.Types.ObjectId;
   subcategory?: string;
   reviews?: IPorductReviews[];
