@@ -78,6 +78,15 @@ const productSchema: Schema<IProduct> = new Schema(
       ],
       required: [true, "Product colors are required"],
     },
+    size: {
+      type: [
+        {
+          name: { type: String, required: true },
+          available: { type: Boolean, required: true },
+        }
+      ],
+      required: [true, "Product size are required"],
+    },
     stock: {
       type: Number,
       required: [true, "Product stock is required"],

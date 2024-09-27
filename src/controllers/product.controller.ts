@@ -21,6 +21,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     subcategory,
     description,
     colors,
+    size
   } = req.body;
 
   let productData: any = {
@@ -30,6 +31,7 @@ export const createProduct = asyncHandler(async (req, res) => {
     discountPrice,
     stock: parseInt(stock),
     colors,
+    size,
     shipping: parseInt(shipping),
     category,
     subcategory,
@@ -80,6 +82,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     subcategory,
     description,
     colors,
+    size
   } = req.body;
 
   let productData: any = {
@@ -93,6 +96,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     shipping,
     category,
     subcategory,
+    size
   };
 
   if (name) {

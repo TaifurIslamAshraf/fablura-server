@@ -5,9 +5,10 @@ import { errorMessage } from "../lib/errorHandler";
 import { generateId } from "../lib/generateId";
 import CartModel from "../models/cart.model";
 import ProductModel from "../models/product.model";
+import { IAddTToCart } from "../../types/cart";
 
 export const addCartItem = asyncHandler(async (req, res) => {
-  const { productId } = req.body;
+  const { productId, colors, size } = req.body as IAddTToCart;
   const cartSession = req.cookies.cart_session;
 
   const product = await ProductModel.findById(productId);
@@ -34,8 +35,11 @@ export const addCartItem = asyncHandler(async (req, res) => {
         $push: {
           cartItem: {
             productId,
+            colors: colors,
+            size: size,
             price: product?.price,
             discountPrice: parseInt(product?.discountPrice!),
+           
           },
         },
       },
@@ -54,6 +58,8 @@ export const addCartItem = asyncHandler(async (req, res) => {
       sessionId: sessionId,
       cartItem: {
         productId,
+        colors: colors,
+        size: size,
         price: product?.price,
         discountPrice: parseInt(product?.discountPrice!),
       },
@@ -108,10 +114,18 @@ export const getCartItem = asyncHandler(async (req, res) => {
         "cartItem.selected": 1,
         "cartItem.price": 1,
         "cartItem.discountPrice": 1,
+        "cartItem.colors": 1,
+        "cartItem.size": 1,
         "cartItem.product": {
           name: { $arrayElemAt: ["$product.name", 0] },
           image: {
             $arrayElemAt: [{ $arrayElemAt: ["$product.images", 0] }, 0],
+          },
+          colors:{
+            $arrayElemAt: ["$product.colors", 0]
+          },
+          size:{
+            $arrayElemAt: ["$product.size", 0]
           },
           shipping: { $arrayElemAt: ["$product.shipping", 0] },
           slug: { $arrayElemAt: ["$product.slug", 0] },
@@ -140,7 +154,7 @@ export const getCartItem = asyncHandler(async (req, res) => {
 });
 
 export const syncCart = asyncHandler(async (req, res) => {
-  const { isSelect, productId, isSelectAll, cartQuantity, deleteCartItem } =
+  const { isSelect, productId, isSelectAll, cartQuantity, deleteCartItem, colors, size } =
     req.query;
   const sessionId = req.cookies.cart_session;
 
@@ -211,6 +225,34 @@ export const syncCart = asyncHandler(async (req, res) => {
       },
       {
         $set: { "cartItem.$.quantity": parseInt(cartQuantity as string) },
+      },
+      { new: true }
+    );
+  }
+
+  if (colors && productId) {
+    // Update product selected colors
+    await CartModel.findOneAndUpdate(
+      {
+        sessionId,
+        "cartItem.productId": productId,
+      },
+      {
+        $set: { "cartItem.$.colors": colors },
+      },
+      { new: true }
+    );
+  }
+
+  if (size && productId) {
+    // Update product selected colors
+    await CartModel.findOneAndUpdate(
+      {
+        sessionId,
+        "cartItem.productId": productId,
+      },
+      {
+        $set: { "cartItem.$.size": size },
       },
       { new: true }
     );

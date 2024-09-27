@@ -17,7 +17,8 @@ import {
 import { authorizeUser, isAuthenticated } from "../middlewares/authGard";
 import { fileUploder } from "../middlewares/uploadFile";
 import { validator } from "../middlewares/validator";
-import {
+import {ProductSchema} from "../validators/product.schema"
+import { 
   CreateProductReviewSchema,
   ProductFilterSchema,
   UpdateProductReviewSchema,

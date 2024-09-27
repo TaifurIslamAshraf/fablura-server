@@ -16,6 +16,12 @@ export const ProductSchema = z.object({
         stock: z.boolean({ required_error: "Color stock is required" })
       })
     ),
+    size: z.array(
+      z.object({
+        name: z.string({ required_error: "Size name is required" }),
+        stock: z.boolean({ required_error: "Size stock is required" })
+      })
+    ),
     stock: z.string({ required_error: "Product stock is required" }),
     sold: z.string().optional(),
     soldAt: z.date().optional(),
