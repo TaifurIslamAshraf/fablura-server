@@ -3540,3 +3540,7 @@
 ::ffff:127.0.0.1 - - [27/Sep/2024:21:02:48 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 200 389 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [27/Sep/2024:21:05:38 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 200 425 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [27/Sep/2024:21:15:44 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 200 667 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [27/Sep/2024:21:23:40 +0000] "POST /api/v1/cart/cart-sync?productId=66f64f70ead2f322771c3e7d&colors=66f64f70ead2f322771c3e7f HTTP/1.1" 200 50 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [27/Sep/2024:21:23:53 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 200 667 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [27/Sep/2024:21:24:30 +0000] "POST /api/v1/cart/cart-sync?productId=66f64f70ead2f322771c3e7d&size=66f64f70ead2f322771c3e81 HTTP/1.1" 200 50 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [27/Sep/2024:21:24:39 +0000] "GET /api/v1/cart/get-cart HTTP/1.1" 200 667 "-" "Thunder Client (https://www.thunderclient.com)"
