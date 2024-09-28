@@ -23,6 +23,14 @@ export const orderSchema = new Schema(
           type: String,
           required: [true, "Product name is required"],
         },
+        colors: {
+          type: String,  
+          required: [true, "Product colors are required"],
+        },
+        size: {
+          type: String,
+          required: [true, "Product size are required"],
+        },
         price: {
           type: Number,
           required: [true, "Product price is required"],

@@ -11,7 +11,7 @@ const generateId_1 = require("../lib/generateId");
 const cart_model_1 = __importDefault(require("../models/cart.model"));
 const product_model_1 = __importDefault(require("../models/product.model"));
 exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
-    const { productId } = req.body;
+    const { productId, colors, size } = req.body;
     const cartSession = req.cookies.cart_session;
     const product = await product_model_1.default.findById(productId);
     if (!product) {
@@ -30,6 +30,8 @@ exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
             $push: {
                 cartItem: {
                     productId,
+                    colors: colors,
+                    size: size,
                     price: product?.price,
                     discountPrice: parseInt(product?.discountPrice),
                 },
@@ -47,6 +49,8 @@ exports.addCartItem = (0, express_async_handler_1.default)(async (req, res) => {
             sessionId: sessionId,
             cartItem: {
                 productId,
+                colors: colors,
+                size: size,
                 price: product?.price,
                 discountPrice: parseInt(product?.discountPrice),
             },
@@ -95,10 +99,18 @@ exports.getCartItem = (0, express_async_handler_1.default)(async (req, res) => {
                 "cartItem.selected": 1,
                 "cartItem.price": 1,
                 "cartItem.discountPrice": 1,
+                "cartItem.colors": 1,
+                "cartItem.size": 1,
                 "cartItem.product": {
                     name: { $arrayElemAt: ["$product.name", 0] },
                     image: {
                         $arrayElemAt: [{ $arrayElemAt: ["$product.images", 0] }, 0],
+                    },
+                    colors: {
+                        $arrayElemAt: ["$product.colors", 0]
+                    },
+                    size: {
+                        $arrayElemAt: ["$product.size", 0]
                     },
                     shipping: { $arrayElemAt: ["$product.shipping", 0] },
                     slug: { $arrayElemAt: ["$product.slug", 0] },
@@ -125,7 +137,7 @@ exports.getCartItem = (0, express_async_handler_1.default)(async (req, res) => {
     });
 });
 exports.syncCart = (0, express_async_handler_1.default)(async (req, res) => {
-    const { isSelect, productId, isSelectAll, cartQuantity, deleteCartItem } = req.query;
+    const { isSelect, productId, isSelectAll, cartQuantity, deleteCartItem, colors, size } = req.query;
     const sessionId = req.cookies.cart_session;
     if (!sessionId) {
         (0, errorHandler_1.errorMessage)(res, 400, "Invalid Cart Product");
@@ -171,6 +183,24 @@ exports.syncCart = (0, express_async_handler_1.default)(async (req, res) => {
             "cartItem.productId": productId,
         }, {
             $set: { "cartItem.$.quantity": parseInt(cartQuantity) },
+        }, { new: true });
+    }
+    if (colors && productId) {
+        // Update product selected colors
+        await cart_model_1.default.findOneAndUpdate({
+            sessionId,
+            "cartItem.productId": productId,
+        }, {
+            $set: { "cartItem.$.colors": colors },
+        }, { new: true });
+    }
+    if (size && productId) {
+        // Update product selected colors
+        await cart_model_1.default.findOneAndUpdate({
+            sessionId,
+            "cartItem.productId": productId,
+        }, {
+            $set: { "cartItem.$.size": size },
         }, { new: true });
     }
     if (deleteCartItem !== undefined && productId) {

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStockStatus = exports.cartProducts = exports.getProductReviews = exports.getAllProductsReviews = exports.deleteReview = exports.updateReviewStatus = exports.createReviews = exports.getResentSoldProducts = exports.getAllProducts = exports.getSingleProduct = exports.deleteProduct = exports.updateProduct = exports.createProduct = void 0;
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const lodash_1 = __importDefault(require("lodash"));
 const deleteImage_1 = require("../lib/deleteImage");
 const errorHandler_1 = require("../lib/errorHandler");
 const slugify_1 = require("../lib/slugify");
@@ -14,13 +15,15 @@ const product_model_1 = __importDefault(require("../models/product.model"));
 const user_model_1 = __importDefault(require("../models/user.model"));
 // create products -- admin
 exports.createProduct = (0, express_async_handler_1.default)(async (req, res) => {
-    const { name, descriptionType, price, discountPrice, stock, shipping, category, subcategory, ingredients, foodDesc, colors, brand, warrantyPeriod, countryOrigin, batteryCapacity, features, dimensions, model, waterproof, powerSupply, bodyMaterials, chargingTime, } = req.body;
+    const { name, price, discountPrice, stock, shipping, category, subcategory, description, colors, size } = req.body;
     let productData = {
         name,
-        descriptionType,
+        description,
         price: parseInt(price),
         discountPrice,
         stock: parseInt(stock),
+        colors,
+        size,
         shipping: parseInt(shipping),
         category,
         subcategory,
@@ -36,37 +39,8 @@ exports.createProduct = (0, express_async_handler_1.default)(async (req, res) =>
     }
     const nameisExitst = await product_model_1.default.findOne({ name });
     if (nameisExitst) {
-        (0, deleteImage_1.deleteMultipleImages)(imagesPath);
+        await (0, deleteImage_1.deleteMultipleImages)(imagesPath);
         (0, errorHandler_1.errorMessage)(res, 400, "Product name should be unique");
-    }
-    // Add description field based on descriptionType
-    if (descriptionType === "foods") {
-        productData = {
-            ...productData,
-            description: {
-                ingredients,
-                foodDesc,
-            },
-        };
-    }
-    else if (descriptionType === "electronics") {
-        productData = {
-            ...productData,
-            description: {
-                colors,
-                brand,
-                warrantyPeriod,
-                countryOrigin,
-                batteryCapacity,
-                features,
-                dimensions,
-                model,
-                waterproof,
-                powerSupply,
-                bodyMaterials,
-                chargingTime,
-            },
-        };
     }
     const product = await product_model_1.default.create(productData);
     res.status(201).json({
@@ -77,16 +51,19 @@ exports.createProduct = (0, express_async_handler_1.default)(async (req, res) =>
 });
 //update product -- admin
 exports.updateProduct = (0, express_async_handler_1.default)(async (req, res) => {
-    const { id, name, price, discountPrice, stock, sold, shipping, category, subcategory, descriptionType, ingredients, foodDesc, color, brand, warrantyPeriod, countryOrigin, batteryCapacity, features, dimensions, model, waterproof, powerSupply, bodyMaterials, chargingTime, } = req.body;
+    const { id, name, price, discountPrice, stock, sold, shipping, category, subcategory, description, colors, size } = req.body;
     let productData = {
         name,
         price,
         discountPrice,
+        description,
+        colors,
         stock,
         sold,
         shipping,
         category,
         subcategory,
+        size
     };
     if (name) {
         productData.slug = (0, slugify_1.slugify)(name);
@@ -102,56 +79,31 @@ exports.updateProduct = (0, express_async_handler_1.default)(async (req, res) =>
         (0, deleteImage_1.deleteMultipleImages)(imagesPath);
         (0, errorHandler_1.errorMessage)(res, 400, "Product name should be unique");
     }
-    // Add description field based on descriptionType
-    let updatedDescription = {};
-    if (descriptionType === "foods" ||
-        existingProduct?.descriptionType === "foods") {
-        updatedDescription = {
-            ...existingProduct?.description,
-            ...(ingredients && { ingredients }),
-            ...(foodDesc && { foodDesc }),
-        };
-    }
-    else if (descriptionType === "electronics" ||
-        existingProduct?.descriptionType === "electronics") {
-        updatedDescription = {
-            ...existingProduct?.description,
-            ...(color && { color }),
-            ...(brand && { brand }),
-            ...(warrantyPeriod && { warrantyPeriod }),
-            ...(countryOrigin && { countryOrigin }),
-            ...(batteryCapacity && { batteryCapacity }),
-            ...(features && { features }),
-            ...(dimensions && { dimensions }),
-            ...(model && { model }),
-            ...(waterproof && { waterproof }),
-            ...(powerSupply && { powerSupply }),
-            ...(bodyMaterials && { bodyMaterials }),
-            ...(chargingTime && { chargingTime }),
-        };
-    }
     if (imagesPath.length > 0) {
         productData.images = imagesPath;
     }
-    productData.description = updatedDescription;
-    const updatedProduct = await product_model_1.default.findByIdAndUpdate(id, productData, {
+    // Deep merge the new data with existing product data using Lodash
+    const updatedProductData = lodash_1.default.merge(existingProduct.toObject(), productData);
+    const updatedProduct = await product_model_1.default.findByIdAndUpdate(id, updatedProductData, {
         new: true,
     });
     if (updatedProduct && existingProduct?.images && imagesPath.length > 0) {
         (0, deleteImage_1.deleteMultipleImages)(existingProduct.images);
     }
     //price sync with cart price
-    const cartToUpdate = await cart_model_1.default.find({
-        "cartItem.productId": id,
-    });
-    await Promise.all(cartToUpdate.map(async (cart) => {
-        cart.cartItem.forEach((item) => {
-            if (item.productId.toString() === id) {
-                (item.price = price), (item.discountPrice = discountPrice);
-            }
+    if (price || discountPrice) {
+        const cartToUpdate = await cart_model_1.default.find({
+            "cartItem.productId": id,
         });
-        await cart.save();
-    }));
+        await Promise.all(cartToUpdate.map(async (cart) => {
+            cart.cartItem.forEach((item) => {
+                if (item.productId.toString() === id) {
+                    (item.price = price), (item.discountPrice = discountPrice);
+                }
+            });
+            await cart.save();
+        }));
+    }
     res.status(200).json({
         success: true,
         message: "Product updated successfull",
@@ -212,18 +164,7 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     const minPrice = parseInt(req.query.minPrice) || 0;
     const maxPrice = parseInt(req.query.maxPrice) || Number.MAX_SAFE_INTEGER;
     const ratings = parseFloat(req.query.ratings) || 0;
-    // const searchWords = (search as string)
-    //   .split(/\s+/)
-    //   .map((word) => `(?=.*\\b${word}\\b)`)
-    //   .join("");
-    // const searchRegExp = new RegExp(`^${searchWords}.*$`, "iu");
-    const filter = {
-    // category: category,
-    // subcategory: subcategory,
-    // price: { $gte: minPrice, $lte: maxPrice },
-    // ratings: { $gte: ratings },
-    // $or: [{ name: { $regex: searchRegExp } }],
-    } || {};
+    const filter = {};
     if (search) {
         filter.$text = { $search: search };
     }
@@ -233,11 +174,17 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
     if (subcategory) {
         filter.subcategory = subcategory;
     }
-    filter.$and = [
-        { discountPrice: { $exists: true } },
-        { discountPrice: { $gte: minPrice, $lte: maxPrice } },
-    ];
-    filter.ratings = { $gte: ratings };
+    // Use $expr to compare discountPrice as a number
+    filter.$expr = {
+        $and: [
+            { $gte: [{ $toDouble: "$discountPrice" }, minPrice] },
+            { $lte: [{ $toDouble: "$discountPrice" }, maxPrice] },
+        ],
+    };
+    if (ratings > 0) {
+        filter.ratings = { $gte: ratings };
+    }
+    console.log("Filter:", JSON.stringify(filter, null, 2)); // Debug log
     const products = await product_model_1.default.find(filter)
         .select("-reviews")
         .populate(["category", "subcategory"])
@@ -245,7 +192,7 @@ exports.getAllProducts = (0, express_async_handler_1.default)(async (req, res) =
         .limit(limit)
         .sort({ createdAt: -1 });
     if (!products || products.length < 1) {
-        (0, errorHandler_1.errorMessage)(res, 404, "No Product availble");
+        return (0, errorHandler_1.errorMessage)(res, 404, "No Product available");
     }
     const productCount = await product_model_1.default.countDocuments(filter);
     const categories = await product_model_1.default.distinct("category", filter);

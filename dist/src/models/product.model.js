@@ -55,54 +55,6 @@ const productReviews = new mongoose_1.default.Schema({
         default: () => new Date(),
     },
 });
-const electronicsSchema = new mongoose_1.default.Schema({
-    colors: {
-        type: String,
-        required: [true, "Product color is required !"],
-    },
-    brand: {
-        type: String,
-        required: [true, "Product brand is required !"],
-    },
-    warrantyPeriod: {
-        type: String,
-    },
-    countryOrigin: {
-        type: String,
-    },
-    batteryCapacity: {
-        type: String,
-    },
-    features: {
-        type: String,
-    },
-    dimensions: {
-        type: String,
-    },
-    model: {
-        type: String,
-    },
-    waterproof: {
-        type: String,
-    },
-    powerSupply: {
-        type: String,
-    },
-    bodyMaterials: {
-        type: String,
-    },
-    chargingTime: {
-        type: String,
-    },
-});
-const foodsSchema = new mongoose_1.default.Schema({
-    ingredients: {
-        type: String,
-    },
-    foodDesc: {
-        type: String,
-    },
-});
 const productSchema = new mongoose_1.Schema({
     name: {
         type: String,
@@ -116,12 +68,6 @@ const productSchema = new mongoose_1.Schema({
         lowercase: true,
         trim: true,
     },
-    descriptionType: {
-        type: String,
-        enum: ["electronics", "foods"],
-        required: [true, "Product description type is required"],
-        trim: true,
-    },
     price: {
         type: Number,
     },
@@ -129,6 +75,28 @@ const productSchema = new mongoose_1.Schema({
         type: String,
         default: 0,
         required: [true, "Product descountPrice price is required"],
+    },
+    description: {
+        type: String,
+        required: [true, "Product description is required"],
+    },
+    colors: {
+        type: [
+            {
+                name: { type: String, required: true },
+                stock: { type: Boolean, required: true },
+            }
+        ],
+        required: [true, "Product colors are required"],
+    },
+    size: {
+        type: [
+            {
+                name: { type: String, required: true },
+                available: { type: Boolean, required: true },
+            }
+        ],
+        required: [true, "Product size are required"],
     },
     stock: {
         type: Number,
@@ -160,10 +128,6 @@ const productSchema = new mongoose_1.Schema({
         ref: "Category",
         required: [true, "Category id is required"],
     },
-    description: {
-        type: mongoose_1.Schema.Types.Mixed,
-        required: [true, "description is required"],
-    },
     ratings: {
         type: Number,
         default: 0,
@@ -187,9 +151,6 @@ productSchema.index({
         slug: 4,
     },
 });
-// Discriminators
 const ProductModel = mongoose_1.default.model("Product", productSchema);
-ProductModel.discriminator("electronics", electronicsSchema);
-ProductModel.discriminator("foods", foodsSchema);
 exports.default = ProductModel;
 //# sourceMappingURL=product.model.js.map

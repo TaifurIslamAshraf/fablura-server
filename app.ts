@@ -41,8 +41,7 @@ app.use(cookieParser());
 
 //alowed origin
 const origin = [
-  "https://varimartbd.com",
-  "https://www.varimartbd.com",
+
   "http://localhost:3000",
 ];
 

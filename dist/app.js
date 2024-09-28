@@ -40,7 +40,7 @@ exports.app.use((0, cookie_parser_1.default)());
 const origin = [
     "https://varimartbd.com",
     "https://www.varimartbd.com",
-    // "http://localhost:3000",
+    "http://localhost:3000",
 ];
 //cors setup
 exports.app.use((0, cors_1.default)({

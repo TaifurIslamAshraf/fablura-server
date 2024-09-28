@@ -19,6 +19,8 @@ exports.createOrderSchema = zod_1.z.object({
         shippingPrice: zod_1.z.number({ required_error: "shipping price is required" }),
         orderItems: zod_1.z.array(zod_1.z.object({
             productName: zod_1.z.string({ required_error: "product name  is required" }),
+            colors: zod_1.z.string({ required_error: "Product Color is required" }),
+            size: zod_1.z.string({ required_error: "Product Size is required" }),
             price: zod_1.z.number({ required_error: "price is required" }),
             quantity: zod_1.z.number({ required_error: "quantity is required" }),
             image: zod_1.z.string({ required_error: "image is required" }),
