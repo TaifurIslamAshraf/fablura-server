@@ -21,6 +21,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     itemsPrice,
     shippingPrice,
     orderItems,
+   
     totalAmount,
     user,
   } = req.body;
@@ -171,7 +172,7 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   if (orderStatus === "Delivered" && order) {
     //update stock and sold
     order.orderItems.map(async (value) => {
-      await updateProductStockSold(value.product.toString(), value.quantity);
+      await updateProductStockSold(value?.product?.toString(), value?.quantity);
     });
 
     //update user review counter
@@ -242,16 +243,16 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   };
 
   orders.forEach((value) => {
-    totalOrders.totalAmount += value.totalAmount;
+    totalOrders.totalAmount += value.totalAmount!;
     if (value?.orderStatus === "Pending") {
       totalPandingOrder.numOfOrders += 1;
-      totalPandingOrder.totalAmount += value?.totalAmount;
+      totalPandingOrder.totalAmount += value?.totalAmount!;
     } else if (value?.orderStatus === "Delivered") {
       totalDeliveredOrder.numOfOrders += 1;
-      totalDeliveredOrder.totalAmount += value?.totalAmount;
+      totalDeliveredOrder.totalAmount += value?.totalAmount!;
     } else if (value?.orderStatus === "Cancelled") {
       totalCancelledOrder.numOfOrders += 1;
-      totalCancelledOrder.totalAmount += value?.totalAmount;
+      totalCancelledOrder.totalAmount += value?.totalAmount!;
     }
   });
 

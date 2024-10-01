@@ -48,6 +48,7 @@ export const orderSchema = new Schema(
           ref: "Product",
           required: [true, "Product is required"],
         },
+   
       },
     ],
 

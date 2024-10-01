@@ -22,10 +22,14 @@ export const addCartItem = asyncHandler(async (req, res) => {
       errorMessage(res, 404, "Cart item not found");
     }
 
-    const isExistProductCart = cart?.cartItem?.find(
-      (item) => item.productId.toString() === productId
+
+    const existingItem = cart?.cartItem.find(
+      item => item.productId.toString() === productId && 
+              item.size === size && 
+              item.colors === colors
     );
-    if (isExistProductCart) {
+
+    if (existingItem) {
       errorMessage(res, 400, "Product Alredy In Cart");
     }
 
@@ -116,6 +120,7 @@ export const getCartItem = asyncHandler(async (req, res) => {
         "cartItem.discountPrice": 1,
         "cartItem.colors": 1,
         "cartItem.size": 1,
+        "cartItem._id" : 1,
         "cartItem.product": {
           name: { $arrayElemAt: ["$product.name", 0] },
           image: {
@@ -154,7 +159,7 @@ export const getCartItem = asyncHandler(async (req, res) => {
 });
 
 export const syncCart = asyncHandler(async (req, res) => {
-  const { isSelect, productId, isSelectAll, cartQuantity, deleteCartItem, colors, size } =
+  const { isSelect, cartItemId, isSelectAll, cartQuantity, deleteCartItem, colors, size } =
     req.query;
   const sessionId = req.cookies.cart_session;
 
@@ -163,12 +168,12 @@ export const syncCart = asyncHandler(async (req, res) => {
     return;
   }
 
-  if (isSelect !== undefined && productId) {
+  if (isSelect !== undefined && cartItemId) {
     // Toggle product selection
     const updatedCartItem = await CartModel.findOneAndUpdate(
       {
         sessionId,
-        "cartItem.productId": productId,
+        "cartItem._id": cartItemId,
       },
       {
         $set: {
@@ -188,7 +193,7 @@ export const syncCart = asyncHandler(async (req, res) => {
       (item) => item.selected
     );
 
-    // Update selectAll based on the condition for the specific productId
+    // Update selectAll based on the condition for the specific cartId
     await CartModel.findOneAndUpdate(
       {
         sessionId,
@@ -216,55 +221,98 @@ export const syncCart = asyncHandler(async (req, res) => {
     );
   }
 
-  if (cartQuantity && productId) {
+  if (cartQuantity && cartItemId) {
     // Update product quantity
-    await CartModel.findOneAndUpdate(
+   const pro =  await CartModel.findOneAndUpdate(
       {
         sessionId,
-        "cartItem.productId": productId,
+        "cartItem._id": cartItemId,
       },
       {
         $set: { "cartItem.$.quantity": parseInt(cartQuantity as string) },
       },
       { new: true }
     );
+
+   
   }
 
-  if (colors && productId) {
-    // Update product selected colors
-    await CartModel.findOneAndUpdate(
-      {
-        sessionId,
-        "cartItem.productId": productId,
-      },
-      {
-        $set: { "cartItem.$.colors": colors },
-      },
-      { new: true }
+  // if (colors && cartItemId) {
+  //   // Update product selected colors
+  //   await CartModel.findOneAndUpdate(
+  //     {
+  //       sessionId,
+  //       "cartItem._id": cartItemId,
+  //     },
+  //     {
+  //       $set: { "cartItem.$.colors": colors },
+  //     },
+  //     { new: true }
+  //   );
+  // }
+
+  // if (size && cartItemId) {
+  //   // Update product selected colors
+  //   await CartModel.findOneAndUpdate(
+  //     {
+  //       sessionId,
+  //       "cartItem._id": cartItemId,
+  //     },
+  //     {
+  //       $set: { "cartItem.$.size": size },
+  //     },
+  //     { new: true }
+  //   );
+  // }
+
+  if ((colors || size) && cartItemId) {
+    const cart = await CartModel.findOne({ sessionId });
+    if (!cart) {
+      errorMessage(res, 404, "Cart not found");
+      return;
+    }
+
+    const updatingItem:any = cart.cartItem.id(cartItemId);
+    if (!updatingItem) {
+      errorMessage(res, 404, "Cart item not found");
+      return;
+    }
+
+    const newColors = colors || updatingItem.colors;
+    const newSize = size || updatingItem.size;
+
+    // Check if a product with the same ID, color, and size already exists
+    const existingItem = cart.cartItem.find(
+      (item:any) => 
+        item?._id?.toString() !== cartItemId &&
+        item.productId.toString() === updatingItem.productId.toString() &&
+        item.colors === newColors &&
+        item.size === newSize
     );
+
+    if (existingItem) {
+      errorMessage(res, 400, "Product already exists in the cart");
+      return;
+    }
+
+    // If no duplicate found, update the item
+    if (colors) {
+      updatingItem.colors = colors;
+    }
+    if (size) {
+      updatingItem.size = size;
+    }
+
+    await cart.save();
   }
 
-  if (size && productId) {
-    // Update product selected colors
-    await CartModel.findOneAndUpdate(
-      {
-        sessionId,
-        "cartItem.productId": productId,
-      },
-      {
-        $set: { "cartItem.$.size": size },
-      },
-      { new: true }
-    );
-  }
-
-  if (deleteCartItem !== undefined && productId) {
+  if (deleteCartItem !== undefined && cartItemId) {
     // Delete specific item from the cart
     const updatedCartItem = await CartModel.findOneAndUpdate(
       { sessionId },
       {
         $pull: {
-          cartItem: { productId },
+          cartItem: { _id: cartItemId },
         },
       },
       { new: true }
