@@ -19,7 +19,7 @@ export const ProductSchema = z.object({
     size: z.array(
       z.object({
         name: z.string({ required_error: "Size name is required" }),
-        stock: z.boolean({ required_error: "Size stock is required" })
+        available: z.boolean({ required_error: "Size stock is required" })
       })
     ),
     stock: z.string({ required_error: "Product stock is required" }),

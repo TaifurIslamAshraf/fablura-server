@@ -24,14 +24,15 @@ export const createProduct = asyncHandler(async (req, res) => {
     size
   } = req.body;
 
+
   let productData: any = {
     name,
     description,
     price: parseInt(price),
     discountPrice,
     stock: parseInt(stock),
-    colors,
-    size,
+    colors: JSON.parse(colors),
+    size: JSON.parse(size),
     shipping: parseInt(shipping),
     category,
     subcategory,
@@ -90,13 +91,13 @@ export const updateProduct = asyncHandler(async (req, res) => {
     price,
     discountPrice,
     description,
-    colors,
     stock,
     sold,
     shipping,
     category,
     subcategory,
-    size
+    colors: JSON.parse(colors),
+    size: JSON.parse(size),
   };
 
   if (name) {
@@ -163,8 +164,10 @@ export const updateProduct = asyncHandler(async (req, res) => {
 //delete product
 export const deleteProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  console.log(id)
 
   const product = await ProductModel.findById(id);
+
   if (!product) {
     errorMessage(res, 404, "Product not found !");
   }

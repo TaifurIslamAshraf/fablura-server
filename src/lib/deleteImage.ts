@@ -1,58 +1,38 @@
 import fs from "fs";
 import path from "path";
 
-export const deleteImage = async (filePath: string) => {
-  if (filePath) {
-    return new Promise((resolve, reject) => {
-      const imagePath = path.join(
-        __dirname,
-        "..",
-        "..",
-        "..",
-        filePath.replace(/\\/g, "/")
-      );
-      fs.unlink(imagePath, (err) => {
-        if (err) {
-          if (err.code === "ENOENT") {
-            console.log("File not found");
-          } else {
-            console.log(`Error Deleting file: ${filePath}`, err);
-          }
+export const deleteImage = async (filePath: string): Promise<void> => {
+  if (!filePath) return;
+
+  const imagePath = path.join(process.cwd(), filePath);
+
+  return new Promise((resolve, reject) => {
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        if (err.code === "ENOENT") {
+          console.log(`File not found: ${imagePath}`);
+          resolve(); // Resolve even if file is not found
+        } else {
+          console.error(`Error deleting file: ${imagePath}`, err);
+          reject(err);
         }
-      });
-      resolve({});
+      } else {
+        console.log(`Successfully deleted file: ${imagePath}`);
+        resolve();
+      }
     });
-  }
+  });
 };
 
-export const deleteMultipleImages = async (filePaths: string[]) => {
-  if (filePaths.length > 0) {
-    const unlinkPromises: Promise<void>[] = [];
+export const deleteMultipleImages = async (filePaths: string[]): Promise<void> => {
+  if (filePaths.length === 0) return;
 
-    filePaths.map((file) => {
-      const unlinkPromise = new Promise<void>((resolve) => {
-        const filePath = path.join(
-          __dirname,
-          "..",
-          "..",
-          "..",
-          file.replace(/\\/g, "/")
-        );
-        console.log(filePath);
-        fs.unlink(filePath, (err) => {
-          if (err && err.code === "ENOENT") {
-            console.log(`File not found ${file}`);
-          } else if (err) {
-            console.error(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+  const deletePromises = filePaths.map(filePath => deleteImage(filePath));
 
-      unlinkPromises.push(unlinkPromise);
-    });
-
-    await Promise.all(unlinkPromises);
+  try {
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.error("Error deleting multiple images:", error);
+    throw error; // Rethrow the error if you want to handle it in the calling function
   }
 };
