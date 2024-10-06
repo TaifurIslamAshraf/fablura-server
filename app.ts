@@ -41,7 +41,7 @@ app.use(cookieParser());
 
 //alowed origin
 const origin = [
-  "http://fablura.com",
+  "https://fablura.com",
 ];
 
 //cors setup
