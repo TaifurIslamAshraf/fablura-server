@@ -38,8 +38,6 @@ exports.app.use(express_1.default.urlencoded({ extended: true, limit: "50mb" }))
 exports.app.use((0, cookie_parser_1.default)());
 //alowed origin
 const origin = [
-    "https://varimartbd.com",
-    "https://www.varimartbd.com",
     "http://localhost:3000",
 ];
 //cors setup

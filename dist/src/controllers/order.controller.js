@@ -41,12 +41,14 @@ exports.createOrder = (0, express_async_handler_1.default)(async (req, res) => {
         });
     }
     const sessionId = req.cookies.cart_session;
-    const productItemIds = orderItems?.map((item) => item.product);
-    await cart_model_1.default.findOneAndUpdate({ sessionId }, {
-        $pull: {
-            cartItem: { productId: { $in: productItemIds } },
-        },
-    }, { new: true });
+    const cartItemIds = orderItems?.map((item) => item._id);
+    if (cartItemIds?.length > 0) {
+        await cart_model_1.default.findOneAndUpdate({ sessionId }, {
+            $pull: {
+                cartItem: { _id: { $in: cartItemIds } },
+            },
+        }, { new: true });
+    }
     const emailPayload = {
         email: secret_1.default.smtpMail,
         subject: "New Order Notification",
@@ -131,7 +133,7 @@ exports.updateOrderStatus = (0, express_async_handler_1.default)(async (req, res
     if (orderStatus === "Delivered" && order) {
         //update stock and sold
         order.orderItems.map(async (value) => {
-            await (0, order_services_1.updateProductStockSold)(value.product.toString(), value.quantity);
+            await (0, order_services_1.updateProductStockSold)(value?.product?.toString(), value?.quantity);
         });
         //update user review counter
         order.orderItems?.forEach(async (value) => {
@@ -165,10 +167,6 @@ exports.getAllOrders = (0, express_async_handler_1.default)(async (req, res) => 
         .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: -1 });
-    if (!orders || orders.length === 0) {
-        (0, errorHandler_1.errorMessage)(res, 404, "Orders not found");
-        return;
-    }
     const countOrders = await order_mode_1.default.countDocuments(filter);
     const totalPage = Math.ceil(countOrders / limit);
     let totalOrders = {

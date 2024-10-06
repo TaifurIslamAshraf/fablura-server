@@ -57,17 +57,19 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   const sessionId = req.cookies.cart_session;
 
-  const productItemIds = orderItems?.map((item: any) => item.product);
+  const cartItemIds = orderItems?.map((item: any) => item._id);
 
+if(cartItemIds?.length > 0){
   await CartModel.findOneAndUpdate(
     { sessionId },
     {
       $pull: {
-        cartItem: { productId: { $in: productItemIds } },
+        cartItem: { _id: { $in: cartItemIds } },
       },
     },
     { new: true }
   );
+}
 
   const emailPayload = {
     email: secret.smtpMail!,
@@ -217,10 +219,6 @@ export const getAllOrders = asyncHandler(async (req, res) => {
     .limit(limit)
     .sort({ createdAt: -1 });
 
-  if (!orders || orders.length === 0) {
-    errorMessage(res, 404, "Orders not found");
-    return;
-  }
 
   const countOrders = await OrderModel.countDocuments(filter);
   const totalPage = Math.ceil(countOrders / limit);

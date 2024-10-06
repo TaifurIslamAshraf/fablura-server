@@ -22,8 +22,8 @@ exports.createProduct = (0, express_async_handler_1.default)(async (req, res) =>
         price: parseInt(price),
         discountPrice,
         stock: parseInt(stock),
-        colors,
-        size,
+        colors: JSON.parse(colors),
+        size: JSON.parse(size),
         shipping: parseInt(shipping),
         category,
         subcategory,
@@ -57,13 +57,13 @@ exports.updateProduct = (0, express_async_handler_1.default)(async (req, res) =>
         price,
         discountPrice,
         description,
-        colors,
         stock,
         sold,
         shipping,
         category,
         subcategory,
-        size
+        colors: JSON.parse(colors),
+        size: JSON.parse(size),
     };
     if (name) {
         productData.slug = (0, slugify_1.slugify)(name);
@@ -113,6 +113,7 @@ exports.updateProduct = (0, express_async_handler_1.default)(async (req, res) =>
 //delete product
 exports.deleteProduct = (0, express_async_handler_1.default)(async (req, res) => {
     const { id } = req.params;
+    console.log(id);
     const product = await product_model_1.default.findById(id);
     if (!product) {
         (0, errorHandler_1.errorMessage)(res, 404, "Product not found !");

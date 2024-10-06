@@ -14,7 +14,7 @@ exports.ProductSchema = zod_1.z.object({
         })),
         size: zod_1.z.array(zod_1.z.object({
             name: zod_1.z.string({ required_error: "Size name is required" }),
-            stock: zod_1.z.boolean({ required_error: "Size stock is required" })
+            available: zod_1.z.boolean({ required_error: "Size stock is required" })
         })),
         stock: zod_1.z.string({ required_error: "Product stock is required" }),
         sold: zod_1.z.string().optional(),
